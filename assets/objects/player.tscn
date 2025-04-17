@@ -13,11 +13,10 @@ func _enter_tree() -> void:
 	set_multiplayer_authority(int(str(name)))
 
 func _ready() -> void:
+	userdata.rpc(SteamHandler.steamName)
 	if (is_multiplayer_authority()):
 		$Controller/Camera3D.current = true
 		%player_display.hide()
-		username = SteamHandler.steamName
-		userdata.rpc(username)
 
 func _physics_process(delta: float) -> void:
 	if not (is_multiplayer_authority()): set_process(false); set_physics_process(false); return
