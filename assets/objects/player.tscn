@@ -1,0 +1,110 @@
+[gd_scene load_steps=4 format=3 uid="uid://cckjrg5mx6cqp"]
+
+[ext_resource type="PackedScene" uid="uid://dp16chaj03n5u" path="res://assets/models/sheepmodel.tscn" id="1_ikdab"]
+
+[sub_resource type="GDScript" id="GDScript_ikdab"]
+resource_name = "playerscript"
+script/source = "extends Node3D
+
+@onready var controller : VehicleBody3D = $Controller
+var user_data : Dictionary = {
+	\"username\": \"steamuser99\" # hes real..
+}
+
+func _enter_tree() -> void:
+	set_multiplayer_authority(int(str(name)))
+
+func _ready() -> void:
+	if (is_multiplayer_authority()):
+		$Controller/Camera3D.current = true
+		%player_display.hide()
+
+func _physics_process(delta: float) -> void:
+	if not (is_multiplayer_authority()): set_process(false); set_physics_process(false); return
+	controller.steering = lerp(controller.steering, Input.get_axis(\"left\", \"right\") * 0.4, 5 * delta)
+	controller.engine_force = Input.get_axis(\"back\", \"forward\") * 100.0
+	
+	setcardata.rpc(controller.global_position,controller.global_rotation)
+
+# multiplayer calls
+@rpc(\"authority\",\"call_remote\",\"unreliable\")
+func setcardata(newpos,newrot):
+	controller.global_position = newpos
+	controller.global_rotation = newrot
+
+@rpc(\"authority\",\"call_remote\",\"reliable\")
+func userdata(DATA):
+	user_data = DATA
+	%player_display.text = DATA.username
+"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5pvfp"]
+size = Vector3(1, 0.423, 1.718)
+
+[node name="Player" type="Node3D"]
+script = SubResource("GDScript_ikdab")
+
+[node name="Controller" type="VehicleBody3D" parent="."]
+mass = 30.0
+
+[node name="Collision" type="CollisionShape3D" parent="Controller"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.204834, -0.255707)
+shape = SubResource("BoxShape3D_5pvfp")
+
+[node name="sheepmodel" parent="Controller" instance=ExtResource("1_ikdab")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="BackRight" type="VehicleWheel3D" parent="Controller"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0.8, 0, 0.598)
+use_as_steering = true
+wheel_radius = 0.4
+wheel_friction_slip = 100.0
+suspension_stiffness = 50.0
+suspension_max_force = 60000.0
+damping_compression = 1.9
+damping_relaxation = 2.0
+
+[node name="FrontRight" type="VehicleWheel3D" parent="Controller"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0.8, 0, -1.228)
+use_as_traction = true
+wheel_radius = 0.4
+wheel_friction_slip = 100.0
+suspension_stiffness = 50.0
+suspension_max_force = 60000.0
+damping_compression = 1.9
+damping_relaxation = 2.0
+
+[node name="BackLeft" type="VehicleWheel3D" parent="Controller"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -0.8, 0, 0.598)
+use_as_steering = true
+wheel_radius = 0.4
+wheel_friction_slip = 100.0
+suspension_stiffness = 50.0
+suspension_max_force = 60000.0
+damping_compression = 1.9
+damping_relaxation = 2.0
+
+[node name="FrontLeft" type="VehicleWheel3D" parent="Controller"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -0.8, 0, -1.228)
+use_as_traction = true
+wheel_radius = 0.4
+wheel_friction_slip = 100.0
+suspension_stiffness = 50.0
+suspension_max_force = 60000.0
+damping_compression = 1.9
+damping_relaxation = 2.0
+
+[node name="Camera3D" type="Camera3D" parent="Controller"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 2.733, 1.42666)
+fov = 110.0
+
+[node name="player_display" type="Label3D" parent="Controller"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.39748, 0)
+pixel_size = 0.02
+billboard = 1
+text = "STEAMUSER99"
+
+[node name="death_ray" type="RayCast3D" parent="Controller"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4412, 0)
+target_position = Vector3(0, 1, 0)

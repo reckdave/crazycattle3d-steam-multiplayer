@@ -1,0 +1,59 @@
+[gd_scene load_steps=9 format=3 uid="uid://orapkll43iqf"]
+
+[ext_resource type="PackedScene" uid="uid://coe4ag08vn4vl" path="res://assets/objects/multiplayer_ui.tscn" id="1_3dl86"]
+[ext_resource type="Texture2D" uid="uid://g8gws3kl1rer" path="res://assets/textures/grass.png" id="1_q5k50"]
+[ext_resource type="Texture2D" uid="uid://di21hsxbrc6wb" path="res://assets/textures/rollinghills.png" id="3_3dl86"]
+
+[sub_resource type="GDScript" id="GDScript_3dl86"]
+resource_name = "ireland"
+script/source = "extends Node3D
+
+func _ready() -> void:
+	MultiplayerHandler.player_spawn = $Players
+"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3dl86"]
+albedo_texture = ExtResource("1_q5k50")
+uv1_scale = Vector3(0.05, 0.05, 0.05)
+uv1_triplanar = true
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qqnjc"]
+panorama = ExtResource("3_3dl86")
+
+[sub_resource type="Sky" id="Sky_q5k50"]
+sky_material = SubResource("PanoramaSkyMaterial_qqnjc")
+
+[sub_resource type="Environment" id="Environment_3dl86"]
+background_mode = 2
+background_energy_multiplier = 0.65
+sky = SubResource("Sky_q5k50")
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 4.0
+ssao_enabled = true
+ssao_radius = 1.75
+ssao_intensity = 15.0
+sdfgi_enabled = true
+
+[node name="Ireland" type="Node3D"]
+script = SubResource("GDScript_3dl86")
+
+[node name="Floor" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+use_collision = true
+size = Vector3(600, 1, 600)
+material = SubResource("StandardMaterial3D_3dl86")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_3dl86")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 10.2035, 0)
+
+[node name="MultiplayerUI" parent="." instance=ExtResource("1_3dl86")]
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://cckjrg5mx6cqp")
+spawn_path = NodePath("../Players")
+
+[node name="Players" type="Node3D" parent="."]

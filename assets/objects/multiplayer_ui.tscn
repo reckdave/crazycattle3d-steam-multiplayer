@@ -1,0 +1,104 @@
+[gd_scene load_steps=2 format=3 uid="uid://coe4ag08vn4vl"]
+
+[sub_resource type="GDScript" id="GDScript_0yv2m"]
+resource_name = "multiplayerUI"
+script/source = "extends CanvasLayer
+
+var server_type : int = 1
+
+func _on_host_pressed() -> void:
+	print(server_type)
+	MultiplayerHandler.create_server(server_type)
+	hide()
+
+func _on_join_pressed() -> void:
+	MultiplayerHandler.join_server(server_type,$JoinOrHost/serverip.text)
+	hide()
+
+func _on_multi_type_item_selected(chosenOption: int) -> void:
+	server_type = chosenOption
+	match (chosenOption):
+		0: # STEAM
+			$JoinOrHost/serverip.placeholder_text = \"LOBBY CODE\"
+			$JoinOrHost/serverip.text = \"\"
+		1: # LOCAL
+			$JoinOrHost/serverip.placeholder_text = \"127.0.0.1\"
+			$JoinOrHost/serverip.text = \"\"
+"
+
+[node name="MultiplayerUI" type="CanvasLayer"]
+script = SubResource("GDScript_0yv2m")
+
+[node name="JoinOrHost" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HOST" type="Button" parent="JoinOrHost"]
+layout_mode = 0
+offset_left = 260.0
+offset_top = 81.0
+offset_right = 311.0
+offset_bottom = 112.0
+text = "HOST"
+
+[node name="JOIN" type="Button" parent="JoinOrHost"]
+layout_mode = 0
+offset_left = 326.0
+offset_top = 81.0
+offset_right = 369.0
+offset_bottom = 112.0
+text = "JOIN
+"
+
+[node name="name" type="LineEdit" parent="JoinOrHost"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -289.0
+offset_top = -31.0
+grow_horizontal = 0
+grow_vertical = 0
+placeholder_text = "enter name"
+
+[node name="serverip" type="LineEdit" parent="JoinOrHost"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -142.0
+offset_top = -198.0
+offset_right = 147.0
+offset_bottom = -167.0
+grow_horizontal = 2
+grow_vertical = 2
+placeholder_text = "127.0.0.1"
+alignment = 1
+
+[node name="MultiType" type="OptionButton" parent="JoinOrHost"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -60.5
+offset_right = 60.5
+offset_bottom = 31.0
+grow_horizontal = 2
+selected = 1
+item_count = 2
+popup/item_0/text = "STEAM"
+popup/item_0/id = 0
+popup/item_1/text = "LOCAL/LAN"
+popup/item_1/id = 1
+
+[connection signal="pressed" from="JoinOrHost/HOST" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="JoinOrHost/JOIN" to="." method="_on_join_pressed"]
+[connection signal="item_selected" from="JoinOrHost/MultiType" to="." method="_on_multi_type_item_selected"]

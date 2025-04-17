@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dp16chaj03n5u"]
+
+[ext_resource type="ArrayMesh" uid="uid://bovye8xmrdrdc" path="res://assets/models/sheep.tres" id="1_rv2bk"]
+
+[node name="sheepmodel" type="Node3D"]
+
+[node name="Model" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.43, 0, 0, 0, 0.43, 0, 0, 0, 0.43, 0, 0, 0)
+mesh = ExtResource("1_rv2bk")
