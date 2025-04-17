@@ -35,6 +35,7 @@ func join_server(server_type,server_ip):
 			peer.connect_lobby(int(server_ip))
 			multiplayer.multiplayer_peer = peer
 			add_sheep(multiplayer.get_unique_id())
+			lobby_id = int(server_ip)
 		1: #LOCAL
 			var peer = ENetMultiplayerPeer.new()
 			peer.create_client(default_ip,port)
@@ -47,14 +48,15 @@ func add_sheep(pid):
 	
 # multiplayer connects
 func _peer_connected(id : int):
-	await get_tree().create_timer(1).timeout
 	add_sheep(id)
 	print("@mew player")
 func _peer_disconnected(id : int):
+	# TODO
 	pass
 # steam connects
 func _steam_lobby_created(connect : int, new_lobbyid):
 	if connect == 1:
+		Steam.setLobbyData(new_lobbyid,"name","%s Lobby" % Steam.getPersonaName())
 		Steam.setLobbyJoinable(new_lobbyid,true)
 		DisplayServer.clipboard_set(str(new_lobbyid))
 		lobby_id = new_lobbyid
