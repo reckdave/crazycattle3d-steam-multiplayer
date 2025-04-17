@@ -31,7 +31,7 @@ func setcardata(newpos,newrot):
 	controller.global_position = newpos
 	controller.global_rotation = newrot
 
-@rpc(\"authority\",\"call_local\",\"reliable\")
+@rpc(\"any_peer\",\"call_local\",\"reliable\")
 func userdata(Pusername):
 	username = Pusername
 	%player_display.text = Pusername
