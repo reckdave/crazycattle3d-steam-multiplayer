@@ -44,6 +44,7 @@ func join_server(server_type,server_ip):
 func add_sheep(pid):
 	var cloneSheep = sheepScene.instantiate()
 	cloneSheep.name = str(pid)
+	
 	player_spawn.add_child(cloneSheep)
 	
 # multiplayer connects

@@ -5,5 +5,5 @@
 [node name="sheepmodel" type="Node3D"]
 
 [node name="Model" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.43, 0, 0, 0, 0.43, 0, 0, 0, 0.43, 0, 0, 0)
+transform = Transform3D(0.43, 0, 0, 0, 0.43, 0, 0, 0, 0.43, 0, 1.143, 1.322)
 mesh = ExtResource("1_rv2bk")
