@@ -36,7 +36,7 @@ func setcardata(newpos,newrot):
 	controller.global_position = newpos
 	controller.global_rotation = newrot
 
-@rpc(\"authority\",\"call_local\",\"reliable\")
+@rpc(\"authority\",\"call_remote\",\"reliable\")
 func userdata(DATA):
 	user_data = DATA
 	%player_display.text = DATA.username
@@ -100,7 +100,6 @@ damping_relaxation = 2.0
 
 [node name="Camera3D" type="Camera3D" parent="Controller"]
 transform = Transform3D(-1, -3.45797e-08, 8.02931e-08, 0, 0.918446, 0.395546, -8.74228e-08, 0.395546, -0.918446, 0, 2.557, -2.082)
-doppler_tracking = 2
 fov = 110.0
 
 [node name="player_display" type="Label3D" parent="Controller"]
