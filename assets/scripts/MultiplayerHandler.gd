@@ -14,8 +14,9 @@ func create_server(server_type):
 		0: # STEAM
 			var peer = SteamMultiplayerPeer.new()
 			peer.lobby_created.connect(_steam_lobby_created)
-			peer.create_lobby(SteamMultiplayerPeer.LOBBY_TYPE_INVISIBLE)
+			peer.peer_connected.connect(_peer_connected)
 			
+			peer.create_lobby(SteamMultiplayerPeer.LOBBY_TYPE_INVISIBLE)
 			multiplayer.multiplayer_peer = peer
 		1: #LOCAL
 			var peer = ENetMultiplayerPeer.new()
@@ -46,7 +47,9 @@ func add_sheep(pid):
 	
 # multiplayer connects
 func _peer_connected(id : int):
+	await get_tree().create_timer(1).timeout
 	add_sheep(id)
+	print("@mew player")
 func _peer_disconnected(id : int):
 	pass
 # steam connects
@@ -54,7 +57,6 @@ func _steam_lobby_created(connect : int, new_lobbyid):
 	if connect == 1:
 		Steam.setLobbyJoinable(new_lobbyid,true)
 		DisplayServer.clipboard_set(str(new_lobbyid))
-		
 		lobby_id = new_lobbyid
 		add_sheep(multiplayer.get_unique_id())
 	else:

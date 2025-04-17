@@ -7,11 +7,13 @@ script/source = "extends CanvasLayer
 var server_type : int = 1
 
 func _on_host_pressed() -> void:
-	print(server_type)
+	#print(server_type)
 	MultiplayerHandler.create_server(server_type)
 	hide()
 
 func _on_join_pressed() -> void:
+	print(server_type)
+	print($JoinOrHost/serverip.text)
 	MultiplayerHandler.join_server(server_type,$JoinOrHost/serverip.text)
 	hide()
 
