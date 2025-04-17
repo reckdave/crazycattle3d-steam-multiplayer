@@ -7,9 +7,7 @@ resource_name = "playerscript"
 script/source = "extends Node3D
 
 @onready var controller : VehicleBody3D = $Controller
-var user_data : Dictionary = {
-	\"username\": \"steamuser99\" # hes real..
-}
+var username = \"steamuser99\"
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(str(name)))
@@ -18,10 +16,8 @@ func _ready() -> void:
 	if (is_multiplayer_authority()):
 		$Controller/Camera3D.current = true
 		%player_display.hide()
-		
-		user_data[\"username\"] = SteamHandler.steamName
-		
-		userdata.rpc(user_data)
+		username = SteamHandler.steamName
+		userdata.rpc(username)
 
 func _physics_process(delta: float) -> void:
 	if not (is_multiplayer_authority()): set_process(false); set_physics_process(false); return
@@ -36,10 +32,10 @@ func setcardata(newpos,newrot):
 	controller.global_position = newpos
 	controller.global_rotation = newrot
 
-@rpc(\"authority\",\"call_remote\",\"reliable\")
-func userdata(DATA):
-	user_data = DATA
-	%player_display.text = DATA.username
+@rpc(\"authority\",\"call_local\",\"reliable\")
+func userdata(Pusername):
+	username = Pusername
+	%player_display.text = Pusername
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5pvfp"]

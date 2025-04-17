@@ -30,10 +30,8 @@ sky = SubResource("Sky_q5k50")
 ambient_light_source = 3
 ambient_light_color = Color(1, 1, 1, 1)
 ambient_light_energy = 4.0
-ssao_enabled = true
 ssao_radius = 1.75
 ssao_intensity = 15.0
-sdfgi_enabled = true
 
 [node name="Ireland" type="Node3D"]
 script = SubResource("GDScript_3dl86")
