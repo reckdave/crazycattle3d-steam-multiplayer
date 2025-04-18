@@ -12,12 +12,6 @@ var lobby_members = []
 signal player_join
 signal player_leave
 
-func _ready() -> void:
-	multiplayer.peer_connected.connect(_peer_connected)
-	multiplayer.peer_disconnected.connect(_peer_disconnected)
-	multiplayer.server_disconnected.connect(_server_closed)
-	multiplayer.connection_failed.connect(_failed_to_connect)
-
 func create_server(server_type):
 	match (server_type):
 		0: # STEAM
@@ -30,7 +24,9 @@ func create_server(server_type):
 			multiplayer.multiplayer_peer = peer
 		1: #LOCAL
 			var peer = ENetMultiplayerPeer.new()
-			
+			multiplayer.peer_connected.connect(_peer_connected)
+			multiplayer.peer_disconnected.connect(_peer_disconnected)
+			multiplayer.server_disconnected.connect(_server_closed)
 			peer.create_server(port,50,5)
 			multiplayer.multiplayer_peer = peer
 			
@@ -48,7 +44,7 @@ func join_server(server_type,server_ip):
 			lobby_id = int(server_ip)
 		1: #LOCAL
 			var peer = ENetMultiplayerPeer.new()
-			
+			multiplayer.connection_failed.connect(_failed_to_connect)
 			var error = peer.create_client(default_ip,port)
 			if error:
 				return error

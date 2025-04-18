@@ -73,11 +73,11 @@ func _physics_process(delta: float) -> void:
 		die.rpc()
 
 # multiplayer calls
-@rpc(\"authority\",\"call_remote\",\"unreliable\",1)
+@rpc(\"authority\",\"call_remote\",\"unreliable\",0)
 func setcardata(newpos,newrot):
 	controller.global_position = newpos
 	controller.global_rotation = newrot
-@rpc(\"authority\",\"call_remote\",\"unreliable\",1)
+@rpc(\"authority\",\"call_remote\",\"unreliable\",0)
 func setfreecamdata(newpos):
 	%FreeCam.global_position = newpos
 
