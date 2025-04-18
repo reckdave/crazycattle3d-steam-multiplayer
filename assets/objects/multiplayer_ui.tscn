@@ -11,7 +11,7 @@ func _ready() -> void:
 	multiplayer.server_disconnected.connect(_player_left)
 
 func _on_host_pressed() -> void:
-	MultiplayerHandler.create_server(server_type)
+	MultiplayerHandler.create_server(server_type,$JoinOrHost/LobbyPublic.selected)
 	hide()
 
 func _on_join_pressed() -> void:
@@ -25,10 +25,12 @@ func _on_multi_type_item_selected(chosenOption: int) -> void:
 			$JoinOrHost/serverip.placeholder_text = \"LOBBY CODE\"
 			$JoinOrHost/serverip.text = \"\"
 			$JoinOrHost/LOBBY.show()
+			$JoinOrHost/LobbyPublic.show()
 		1: # LOCAL
 			$JoinOrHost/serverip.placeholder_text = \"127.0.0.1\"
 			$JoinOrHost/serverip.text = \"\"
 			$JoinOrHost/LOBBY.hide()
+			$JoinOrHost/LobbyPublic.show()
 
 func _on_name_text_editted(new_text: String) -> void:
 	Global.username = new_text
@@ -121,10 +123,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -36.0
-offset_top = -112.0
-offset_right = 33.0
-offset_bottom = -81.0
+offset_left = -38.0
+offset_top = -125.0
+offset_right = 31.0
+offset_bottom = -94.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "LOBBYS"
@@ -141,6 +143,7 @@ offset_top = -31.0
 grow_horizontal = 0
 grow_vertical = 0
 placeholder_text = "enter name"
+max_length = 25
 
 [node name="serverip" type="LineEdit" parent="JoinOrHost"]
 layout_mode = 1
@@ -172,6 +175,21 @@ item_count = 2
 popup/item_0/text = "STEAM"
 popup/item_0/id = 0
 popup/item_1/text = "LOCAL/LAN"
+popup/item_1/id = 1
+
+[node name="LobbyPublic" type="OptionButton" parent="JoinOrHost"]
+visible = false
+layout_mode = 0
+offset_left = 108.0
+offset_top = 81.0
+offset_right = 254.0
+offset_bottom = 112.0
+alignment = 1
+selected = 0
+item_count = 2
+popup/item_0/text = "PUBLIC"
+popup/item_0/id = 0
+popup/item_1/text = "FRIENDS ONLY"
 popup/item_1/id = 1
 
 [node name="ServerList" type="Control" parent="."]

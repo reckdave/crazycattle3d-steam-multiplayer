@@ -12,7 +12,7 @@ var lobby_members = []
 signal player_join
 signal player_leave
 
-func create_server(server_type):
+func create_server(server_type,lobbytype):
 	match (server_type):
 		0: # STEAM
 			var peer = SteamMultiplayerPeer.new()
@@ -20,7 +20,14 @@ func create_server(server_type):
 			peer.peer_connected.connect(_peer_connected)
 			peer.peer_disconnected.connect(_peer_disconnected)
 			
-			peer.create_lobby(SteamMultiplayerPeer.LOBBY_TYPE_INVISIBLE)
+			match (lobbytype):
+				0: # PUBLIC
+					lobbytype = Steam.LOBBY_TYPE_PUBLIC
+				1: # FRIENDS ONLY
+					lobbytype = Steam.LOBBY_TYPE_FRIENDS_ONLY
+				_:
+					lobbytype = Steam.LOBBY_TYPE_FRIENDS_ONLY
+			peer.create_lobby(lobbytype)
 			multiplayer.multiplayer_peer = peer
 		1: #LOCAL
 			var peer = ENetMultiplayerPeer.new()
@@ -52,6 +59,7 @@ func join_server(server_type,server_ip):
 			if error:
 				return error
 			multiplayer.multiplayer_peer = peer
+
 
 func add_sheep(pid):
 	if !(multiplayer.is_server()):

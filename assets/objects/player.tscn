@@ -1,17 +1,19 @@
-[gd_scene load_steps=26 format=3 uid="uid://cckjrg5mx6cqp"]
+[gd_scene load_steps=28 format=3 uid="uid://cckjrg5mx6cqp"]
 
 [ext_resource type="PackedScene" uid="uid://kpnlifa2cxf7" path="res://assets/objects/settings_ui.tscn" id="1_6r1sy"]
 [ext_resource type="PackedScene" uid="uid://dp16chaj03n5u" path="res://assets/models/sheepmodel.tscn" id="1_ikdab"]
 [ext_resource type="AudioStream" uid="uid://ijgggmfu3va3" path="res://assets/audio/deaths/Maltigi scream.mp3" id="2_5pvfp"]
+[ext_resource type="Texture2D" uid="uid://cdovwkedvp0um" path="res://assets/textures/thegouls.jpg" id="2_xvjlw"]
 [ext_resource type="Texture2D" uid="uid://nohi363i1m8t" path="res://assets/textures/explosion-Sheet.png" id="3_jg13i"]
 [ext_resource type="AudioStream" uid="uid://jccsstg3m8ue" path="res://assets/audio/explode.wav" id="3_jssbp"]
+[ext_resource type="FontFile" uid="uid://b6jjdr4a7agoe" path="res://assets/IMPACT.TTF" id="6_nqkij"]
 
 [sub_resource type="GDScript" id="GDScript_ikdab"]
 resource_name = "playerscript"
 script/source = "extends Node3D
 
-@onready var controller : VehicleBody3D = $Controller
 @export var sheep_speed : float = 100.0
+
 var dead : bool = false
 var infreecam : bool = false:
 	set(val):
@@ -51,11 +53,13 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if not (is_multiplayer_authority()): set_process(false); set_physics_process(false); return
 	if Input.is_action_just_pressed(\"debug_die\"): die.rpc()
+	if Input.is_action_just_pressed(\"debug_respawn\"): respawn.rpc()
 	
 	if !(dead):
-		controller.steering = lerp(controller.steering, Input.get_axis(\"left\", \"right\") * 0.4, 5 * delta)
-		controller.engine_force = Input.get_axis(\"back\", \"forward\") * sheep_speed
-		setcardata.rpc(controller.global_position,controller.global_rotation)
+		if !(has_node(\"Controller\")): return
+		$Controller.steering = lerp($Controller.steering, Input.get_axis(\"left\", \"right\") * 0.4, 5 * delta)
+		$Controller.engine_force = Input.get_axis(\"back\", \"forward\") * sheep_speed
+		setcardata.rpc($Controller.global_position,$Controller.global_rotation)
 	elif infreecam:
 		var input_dir = Input.get_vector(\"left\",\"right\",\"forward\",\"back\")
 		var forward_dir = %FreeCam.global_transform.basis * Vector3(input_dir.x,0,input_dir.y).normalized()
@@ -75,8 +79,8 @@ func _physics_process(delta: float) -> void:
 # multiplayer calls
 @rpc(\"authority\",\"call_remote\",\"unreliable\",0)
 func setcardata(newpos,newrot):
-	controller.global_position = newpos
-	controller.global_rotation = newrot
+	$Controller.global_position = newpos
+	$Controller.global_rotation = newrot
 @rpc(\"authority\",\"call_remote\",\"unreliable\",0)
 func setfreecamdata(newpos):
 	%FreeCam.global_position = newpos
@@ -86,6 +90,9 @@ func userdata(Pusername,Pdead,Pinfreecam):
 	username = Pusername
 	dead = Pdead
 	infreecam = Pinfreecam
+	$Controller/theghoul.hide()
+	if (username == \"\") or (username == \"steamuser99\") or (username == \"reckdave\"):
+		$Controller/theghoul.show()
 @rpc(\"authority\",\"call_local\",\"reliable\",0)
 func die():
 	if !(dead):
@@ -102,12 +109,26 @@ func die():
 		infreecam = true
 		dead = true
 		$Controller/SFX/Death1.play()
+@rpc(\"authority\",\"call_local\",\"reliable\")
+func respawn():
+	if (dead):
+		
+		$Controller.global_rotation = Vector3(0,0,0)
+		$Controller.global_position = Vector3(0,2,0)
+		$Controller.freeze = false
+		$Controller/Collision.disabled = false
+		$Controller/sheepmodel.show()
+		$Controller/VFX/Explosion.play(\"NONE\")
+		
+		sheep_speed = 100.0
+		dead = false
+		infreecam = false
 # multiplayer connects
 func _peer_connected(_pid):
 	userdata.rpc(Global.username,dead,infreecam)
 "
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_5pvfp"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_6r1sy"]
 size = Vector3(1, 0.423, 1.718)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jssbp"]
@@ -178,7 +199,7 @@ region = Rect2(3000, 0, 200, 284)
 atlas = ExtResource("3_jg13i")
 region = Rect2(3200, 0, 200, 284)
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_vhanp"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_nqkij"]
 animations = [{
 "frames": [{
 "duration": 1.0,
@@ -251,14 +272,12 @@ animations = [{
 [node name="Player" type="Node3D"]
 script = SubResource("GDScript_ikdab")
 
-[node name="SettingsMenu" parent="." instance=ExtResource("1_6r1sy")]
-
 [node name="Controller" type="VehicleBody3D" parent="."]
 mass = 30.0
 
 [node name="Collision" type="CollisionShape3D" parent="Controller"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.165, -0.112)
-shape = SubResource("BoxShape3D_5pvfp")
+shape = SubResource("BoxShape3D_6r1sy")
 
 [node name="sheepmodel" parent="Controller" instance=ExtResource("1_ikdab")]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, -0.522, 0.932)
@@ -321,6 +340,12 @@ pixel_size = 0.02
 billboard = 1
 text = "STEAMUSER99"
 
+[node name="theghoul" type="Sprite3D" parent="Controller"]
+transform = Transform3D(0.7, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+pixel_size = 0.005
+billboard = 1
+texture = ExtResource("2_xvjlw")
+
 [node name="SFX" type="Node3D" parent="Controller"]
 unique_name_in_owner = true
 
@@ -341,9 +366,32 @@ panning_strength = 1.4
 [node name="Explosion" type="AnimatedSprite3D" parent="Controller/VFX"]
 pixel_size = 0.03
 billboard = 1
-sprite_frames = SubResource("SpriteFrames_vhanp")
+sprite_frames = SubResource("SpriteFrames_nqkij")
 animation = &"NONE"
 autoplay = "NONE"
+
+[node name="SettingsMenu" parent="." instance=ExtResource("1_6r1sy")]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Title" type="RichTextLabel" parent="UI/Control"]
+layout_mode = 1
+offset_right = 213.0
+offset_bottom = 40.0
+scale = Vector2(3.2, 2)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_fonts/normal_font = ExtResource("6_nqkij")
+theme_override_font_sizes/normal_font_size = 12
+text = "CrazyCattle3D Multiplayer Release 1.0"
 
 [node name="FreeCam" type="Camera3D" parent="."]
 unique_name_in_owner = true
