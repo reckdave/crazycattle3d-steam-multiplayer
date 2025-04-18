@@ -6,6 +6,10 @@ script/source = "extends CanvasLayer
 
 @onready var server_type : int = $JoinOrHost/MultiType.selected
 
+func _ready() -> void:
+	MultiplayerHandler.player_leave.connect(_player_left)
+	multiplayer.server_disconnected.connect(_player_left)
+
 func _on_host_pressed() -> void:
 	MultiplayerHandler.create_server(server_type)
 	hide()
@@ -26,6 +30,15 @@ func _on_multi_type_item_selected(chosenOption: int) -> void:
 
 func _on_name_text_editted(new_text: String) -> void:
 	Global.username = new_text
+
+# multiplayer connects
+func _player_left():
+	multiplayer.multiplayer_peer = null
+	for player in $\"../Players\".get_children():
+		player.queue_free()
+	MultiplayerHandler.lobby_members.clear()
+	MultiplayerHandler.lobby_id = 0
+	show()
 "
 
 [node name="MultiplayerUI" type="CanvasLayer"]

@@ -18,5 +18,5 @@ func _ready() -> void:
 	else:
 		print("steam is open")
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	Steam.run_callbacks()

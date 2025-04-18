@@ -1,5 +1,6 @@
-[gd_scene load_steps=25 format=3 uid="uid://cckjrg5mx6cqp"]
+[gd_scene load_steps=26 format=3 uid="uid://cckjrg5mx6cqp"]
 
+[ext_resource type="PackedScene" uid="uid://kpnlifa2cxf7" path="res://assets/objects/settings_ui.tscn" id="1_6r1sy"]
 [ext_resource type="PackedScene" uid="uid://dp16chaj03n5u" path="res://assets/models/sheepmodel.tscn" id="1_ikdab"]
 [ext_resource type="AudioStream" uid="uid://ijgggmfu3va3" path="res://assets/audio/deaths/Maltigi scream.mp3" id="2_5pvfp"]
 [ext_resource type="Texture2D" uid="uid://nohi363i1m8t" path="res://assets/textures/explosion-Sheet.png" id="3_jg13i"]
@@ -72,20 +73,20 @@ func _physics_process(delta: float) -> void:
 		die.rpc()
 
 # multiplayer calls
-@rpc(\"authority\",\"call_remote\",\"unreliable\")
+@rpc(\"authority\",\"call_remote\",\"unreliable\",1)
 func setcardata(newpos,newrot):
 	controller.global_position = newpos
 	controller.global_rotation = newrot
-@rpc(\"authority\",\"call_remote\",\"unreliable\")
+@rpc(\"authority\",\"call_remote\",\"unreliable\",1)
 func setfreecamdata(newpos):
 	%FreeCam.global_position = newpos
 
-@rpc(\"authority\",\"call_local\",\"reliable\")
+@rpc(\"authority\",\"call_local\",\"reliable\",0)
 func userdata(Pusername,Pdead,Pinfreecam):
 	username = Pusername
 	dead = Pdead
 	infreecam = Pinfreecam
-@rpc(\"authority\",\"call_local\",\"reliable\")
+@rpc(\"authority\",\"call_local\",\"reliable\",0)
 func die():
 	if !(dead):
 		print(\"%s HAS DIEDDDDD\" % username)
@@ -102,7 +103,7 @@ func die():
 		dead = true
 		$Controller/SFX/Death1.play()
 # multiplayer connects
-func _peer_connected(pid):
+func _peer_connected(_pid):
 	userdata.rpc(Global.username,dead,infreecam)
 "
 
@@ -249,6 +250,8 @@ animations = [{
 
 [node name="Player" type="Node3D"]
 script = SubResource("GDScript_ikdab")
+
+[node name="SettingsMenu" parent="." instance=ExtResource("1_6r1sy")]
 
 [node name="Controller" type="VehicleBody3D" parent="."]
 mass = 30.0
