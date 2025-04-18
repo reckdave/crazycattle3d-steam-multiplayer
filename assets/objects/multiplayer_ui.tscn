@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://coe4ag08vn4vl"]
+[gd_scene load_steps=3 format=3 uid="uid://coe4ag08vn4vl"]
 
 [sub_resource type="GDScript" id="GDScript_0yv2m"]
 resource_name = "multiplayerUI"
@@ -24,9 +24,11 @@ func _on_multi_type_item_selected(chosenOption: int) -> void:
 		0: # STEAM
 			$JoinOrHost/serverip.placeholder_text = \"LOBBY CODE\"
 			$JoinOrHost/serverip.text = \"\"
+			$JoinOrHost/LOBBY.show()
 		1: # LOCAL
 			$JoinOrHost/serverip.placeholder_text = \"127.0.0.1\"
 			$JoinOrHost/serverip.text = \"\"
+			$JoinOrHost/LOBBY.hide()
 
 func _on_name_text_editted(new_text: String) -> void:
 	Global.username = new_text
@@ -39,6 +41,47 @@ func _player_left():
 	MultiplayerHandler.lobby_members.clear()
 	MultiplayerHandler.lobby_id = 0
 	show()
+
+func _on_lobby_pressed() -> void:
+	$ServerList._refresh_lobby()
+	$ServerList.show()
+	$JoinOrHost.hide()
+"
+
+[sub_resource type="GDScript" id="GDScript_twxod"]
+resource_name = "serverlist"
+script/source = "extends Control
+
+func _refresh_lobby():
+	for lobby in $Scroll/ListContainer.get_children():
+		lobby.queue_free()
+	
+	Steam.addRequestLobbyListDistanceFilter(Steam.LOBBY_DISTANCE_FILTER_WORLDWIDE)
+	Steam.requestLobbyList()
+	Steam.lobby_match_list.connect(_on_lobby_match_list)
+
+func _on_lobby_match_list(lobbylist : Array):
+	for this_lobby in lobbylist:
+		var lobby_name = Steam.getLobbyData(this_lobby,\"name\")
+		var lobby_mode = Steam.getLobbyData(this_lobby,\"mode\")
+		var lobby_num_players = Steam.getNumLobbyMembers(this_lobby)
+		
+		if (lobby_mode) == \"crazycattle3d-multiplayer-git\":
+			var lobby_button = Button.new()
+			lobby_button.text = \"%s's | Players: %s\" % [lobby_name,lobby_num_players]
+			lobby_button.name = str(this_lobby)
+			lobby_button.pressed.connect(_join_lobby.bind(this_lobby))
+			$Scroll/ListContainer.add_child(lobby_button)
+
+func _join_lobby(lobby_id):
+	MultiplayerHandler.join_server(0,lobby_id)
+
+func _on_refresh_pressed() -> void:
+	_refresh_lobby()
+
+func _on_close_pressed() -> void:
+	hide()
+	$\"../JoinOrHost\".show()
 "
 
 [node name="MultiplayerUI" type="CanvasLayer"]
@@ -68,6 +111,22 @@ offset_right = 369.0
 offset_bottom = 112.0
 text = "JOIN
 "
+
+[node name="LOBBY" type="Button" parent="JoinOrHost"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -36.0
+offset_top = -112.0
+offset_right = 33.0
+offset_bottom = -81.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "LOBBYS"
 
 [node name="name" type="LineEdit" parent="JoinOrHost"]
 layout_mode = 1
@@ -114,7 +173,60 @@ popup/item_0/id = 0
 popup/item_1/text = "LOCAL/LAN"
 popup/item_1/id = 1
 
+[node name="ServerList" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_twxod")
+
+[node name="Scroll" type="ScrollContainer" parent="ServerList"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -198.5
+offset_top = -178.0
+offset_right = 201.5
+offset_bottom = 178.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ListContainer" type="VBoxContainer" parent="ServerList/Scroll"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+
+[node name="REFRESH" type="Button" parent="ServerList"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -84.0
+offset_right = -8.0
+offset_bottom = 31.0
+grow_horizontal = 2
+text = "REFRESH"
+
+[node name="CLOSE" type="Button" parent="ServerList"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 21.0
+offset_right = 97.0
+offset_bottom = 31.0
+grow_horizontal = 2
+text = "CLOSE"
+
 [connection signal="pressed" from="JoinOrHost/HOST" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="JoinOrHost/JOIN" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="JoinOrHost/LOBBY" to="." method="_on_lobby_pressed"]
 [connection signal="text_changed" from="JoinOrHost/name" to="." method="_on_name_text_editted"]
 [connection signal="item_selected" from="JoinOrHost/MultiType" to="." method="_on_multi_type_item_selected"]
+[connection signal="pressed" from="ServerList/REFRESH" to="ServerList" method="_on_refresh_pressed"]
+[connection signal="pressed" from="ServerList/CLOSE" to="ServerList" method="_on_close_pressed"]

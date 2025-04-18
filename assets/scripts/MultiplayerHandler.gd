@@ -84,6 +84,8 @@ func _failed_to_connect():
 func _steam_lobby_created(connect : int, new_lobbyid):
 	if connect == 1:
 		Steam.setLobbyData(new_lobbyid,"name","%s Lobby" % Steam.getPersonaName())
+		Steam.setLobbyData(new_lobbyid,"mode","crazycattle3d-multiplayer-git")
+		
 		Steam.setLobbyJoinable(new_lobbyid,true)
 		DisplayServer.clipboard_set(str(new_lobbyid))
 		lobby_id = new_lobbyid
