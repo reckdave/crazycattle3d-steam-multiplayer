@@ -16,6 +16,7 @@ func _ready() -> void:
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qqnjc"]
 panorama = ExtResource("3_3dl86")
+energy_multiplier = 3.0
 
 [sub_resource type="Sky" id="Sky_q5k50"]
 sky_material = SubResource("PanoramaSkyMaterial_qqnjc")

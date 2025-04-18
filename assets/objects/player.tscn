@@ -14,13 +14,26 @@ script/source = "extends Node3D
 
 @export var sheep_speed : float = 100.0
 
-var dead : bool = false
+#region playerdata
+var dead : bool = false:
+	set(val):
+		
+		$Controller.freeze = val
+		$Controller/Collision.disabled = val
+		$Controller/sheepmodel.visible = !val
+		
+		
+		$Controller.engine_force = 0.0
+		$Controller.steering = 0.0
+		
+		dead = val
 var infreecam : bool = false:
 	set(val):
 		if (is_multiplayer_authority()):
 			$Controller/Camera.current = !val
 			$FreeCam.current = val
 		if val:
+			%FreeCam.global_position = $Controller.global_position + Vector3(0,5,0)
 			%player_display.reparent(%FreeCam,false)
 		else:
 			%player_display.reparent($Controller,false)
@@ -29,19 +42,19 @@ var username : String = \"steamuser99\":
 	set(val):
 		%player_display.text = val
 		username = val
+#endregion
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(str(name)))
 
 func _ready() -> void:
-	if (is_multiplayer_authority()):
-		$Controller/Camera.current = true
-		%player_display.hide()
-		
-		await get_tree().create_timer(1).timeout
-		userdata.rpc(Global.username,dead,infreecam)
-		
-		multiplayer.peer_connected.connect(_peer_connected)
+	if !(is_multiplayer_authority()): return
+	multiplayer.peer_connected.connect(_peer_connected)
+	$Controller/Camera.current = true
+	%player_display.hide()
+	
+	await get_tree().create_timer(1).timeout
+	userdata.rpc(Global.username,dead,infreecam)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if !(is_multiplayer_authority()): return
@@ -53,14 +66,14 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if not (is_multiplayer_authority()): set_process(false); set_physics_process(false); return
 	if Input.is_action_just_pressed(\"debug_die\"): die.rpc()
-	if Input.is_action_just_pressed(\"debug_respawn\"): respawn.rpc()
+	#if Input.is_action_just_pressed(\"debug_respawn\"): respawn.rpc()
 	
 	if !(dead):
-		if !(has_node(\"Controller\")): return
+		#if !(has_node(\"Controller\")): return
 		$Controller.steering = lerp($Controller.steering, Input.get_axis(\"left\", \"right\") * 0.4, 5 * delta)
 		$Controller.engine_force = Input.get_axis(\"back\", \"forward\") * sheep_speed
 		setcardata.rpc($Controller.global_position,$Controller.global_rotation)
-	elif infreecam:
+	elif (infreecam) and (dead):
 		var input_dir = Input.get_vector(\"left\",\"right\",\"forward\",\"back\")
 		var forward_dir = %FreeCam.global_transform.basis * Vector3(input_dir.x,0,input_dir.y).normalized()
 		
@@ -90,39 +103,37 @@ func userdata(Pusername,Pdead,Pinfreecam):
 	username = Pusername
 	dead = Pdead
 	infreecam = Pinfreecam
+	
 	$Controller/theghoul.hide()
-	if (username == \"\") or (username == \"steamuser99\") or (username == \"reckdave\"):
+	if (username == \"\") or (username == \"steamuser99\"):
 		$Controller/theghoul.show()
 @rpc(\"authority\",\"call_local\",\"reliable\",0)
 func die():
 	if !(dead):
 		print(\"%s HAS DIEDDDDD\" % username)
 		
-		$Controller.freeze = true
-		$Controller/Collision.disabled = true
-		$Controller/sheepmodel.hide()
 		$Controller/VFX/Explosion.play(\"Explode\")
 		$Controller/SFX/Explode.play()
+		$Controller/SFX/Death1.play()
 		
 		sheep_speed = 0.0
 		
 		infreecam = true
 		dead = true
-		$Controller/SFX/Death1.play()
-@rpc(\"authority\",\"call_local\",\"reliable\")
+@rpc(\"authority\",\"call_local\",\"reliable\",0)
 func respawn():
 	if (dead):
+		print(\"revive %s\" % username)
 		
 		$Controller.global_rotation = Vector3(0,0,0)
 		$Controller.global_position = Vector3(0,2,0)
-		$Controller.freeze = false
-		$Controller/Collision.disabled = false
-		$Controller/sheepmodel.show()
 		$Controller/VFX/Explosion.play(\"NONE\")
 		
 		sheep_speed = 100.0
 		dead = false
 		infreecam = false
+		
+		#setcardata.rpc($Controller.global_position,$Controller.global_rotation)
 # multiplayer connects
 func _peer_connected(_pid):
 	userdata.rpc(Global.username,dead,infreecam)
@@ -358,7 +369,7 @@ max_distance = 10.0
 stream = ExtResource("3_jssbp")
 volume_db = -11.0
 pitch_scale = 1.4
-max_distance = 30.0
+max_distance = 100.0
 panning_strength = 1.4
 
 [node name="VFX" type="Node3D" parent="Controller"]

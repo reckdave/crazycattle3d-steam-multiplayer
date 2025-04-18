@@ -54,13 +54,15 @@ func _on_lobby_pressed() -> void:
 resource_name = "serverlist"
 script/source = "extends Control
 
+func _ready() -> void:
+	Steam.lobby_match_list.connect(_on_lobby_match_list)
+
 func _refresh_lobby():
 	for lobby in $Scroll/ListContainer.get_children():
 		lobby.queue_free()
 	
 	Steam.addRequestLobbyListDistanceFilter(Steam.LOBBY_DISTANCE_FILTER_WORLDWIDE)
 	Steam.requestLobbyList()
-	Steam.lobby_match_list.connect(_on_lobby_match_list)
 
 func _on_lobby_match_list(lobbylist : Array):
 	for this_lobby in lobbylist:
