@@ -1,9 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://orapkll43iqf"]
+[gd_scene load_steps=11 format=3 uid="uid://orapkll43iqf"]
 
 [ext_resource type="PackedScene" uid="uid://coe4ag08vn4vl" path="res://assets/objects/multiplayer_ui.tscn" id="1_3dl86"]
 [ext_resource type="Texture2D" uid="uid://g8gws3kl1rer" path="res://assets/textures/grass.png" id="1_q5k50"]
 [ext_resource type="PackedScene" uid="uid://b7ywy05yf52t4" path="res://assets/models/fence.tscn" id="2_qqnjc"]
 [ext_resource type="Texture2D" uid="uid://di21hsxbrc6wb" path="res://assets/textures/rollinghills.png" id="3_3dl86"]
+[ext_resource type="Texture2D" uid="uid://bd3yiomqoghfc" path="res://assets/textures/grass_tuft.png" id="3_vc6ol"]
 
 [sub_resource type="GDScript" id="GDScript_3dl86"]
 resource_name = "ireland"
@@ -40,11 +41,154 @@ script = SubResource("GDScript_3dl86")
 [node name="Floor" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
 use_collision = true
+collision_layer = 3
 size = Vector3(600, 1, 600)
 material = SubResource("StandardMaterial3D_3dl86")
 
 [node name="Fence" parent="." instance=ExtResource("2_qqnjc")]
 transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 3, 0)
+
+[node name="Grass" type="Node3D" parent="."]
+
+[node name="SPRITE" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.142172, 0)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE2" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.952, 0.142172, -24.2469)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE3" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.4714, 0.142172, -10.7419)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE4" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 86.0048, 0.142172, -10.7419)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE5" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.264, 0.142172, -29.8824)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE6" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.264, 0.142172, 18.0044)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE7" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 78.6252, 0.142172, 51.0144)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE8" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 78.6252, 0.142172, 30.6567)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE9" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.4181, 0.142172, 30.6567)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE10" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.4181, 0.142172, 75.5517)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE11" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45.843, 0.142172, 63.4121)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE12" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.9947, 0.142172, 63.4121)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE13" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.9947, 0.142172, 20.694)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE14" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.0279, 0.142172, 20.694)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE15" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -51.0003, 0.142172, 51.7966)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE16" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -51.0003, 0.142172, -18.816)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE17" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.1903, 0.142172, -26.1642)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE18" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34.8175, 0.142172, -60.1642)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE19" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -59.7443, 0.142172, -65.5681)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
+
+[node name="SPRITE20" type="Sprite3D" parent="Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -64.3293, 0.142172, -46.8421)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("3_vc6ol")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_3dl86")

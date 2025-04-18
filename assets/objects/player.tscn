@@ -1,53 +1,251 @@
-[gd_scene load_steps=4 format=3 uid="uid://cckjrg5mx6cqp"]
+[gd_scene load_steps=25 format=3 uid="uid://cckjrg5mx6cqp"]
 
 [ext_resource type="PackedScene" uid="uid://dp16chaj03n5u" path="res://assets/models/sheepmodel.tscn" id="1_ikdab"]
+[ext_resource type="AudioStream" uid="uid://ijgggmfu3va3" path="res://assets/audio/deaths/Maltigi scream.mp3" id="2_5pvfp"]
+[ext_resource type="Texture2D" uid="uid://nohi363i1m8t" path="res://assets/textures/explosion-Sheet.png" id="3_jg13i"]
+[ext_resource type="AudioStream" uid="uid://jccsstg3m8ue" path="res://assets/audio/explode.wav" id="3_jssbp"]
 
 [sub_resource type="GDScript" id="GDScript_ikdab"]
 resource_name = "playerscript"
 script/source = "extends Node3D
 
 @onready var controller : VehicleBody3D = $Controller
-var username = \"steamuser99\":
+@export var sheep_speed : float = 100.0
+var dead : bool = false
+var infreecam : bool = false:
+	set(val):
+		if (is_multiplayer_authority()):
+			$Controller/Camera.current = !val
+			$FreeCam.current = val
+		if val:
+			%player_display.reparent(%FreeCam,false)
+		else:
+			%player_display.reparent($Controller)
+		infreecam = val
+var username : String = \"steamuser99\":
 	set(val):
 		%player_display.text = val
+		username = val
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(str(name)))
 
 func _ready() -> void:
 	if (is_multiplayer_authority()):
-		$Controller/Camera3D.current = true
+		$Controller/Camera.current = true
 		%player_display.hide()
 		
 		await get_tree().create_timer(1).timeout
-		userdata.rpc(Global.username)
+		userdata.rpc(Global.username,dead,infreecam)
 		
 		multiplayer.peer_connected.connect(_peer_connected)
 
+func _unhandled_input(event: InputEvent) -> void:
+	if !(is_multiplayer_authority()): return
+	if (infreecam) and event is InputEventMouseMotion:
+		var look_dir = event.relative * 0.01
+		%FreeCam.rotation.y -= look_dir.x * 1.0 * 1.0
+		%FreeCam.rotation.x = clamp(%FreeCam.rotation.x - look_dir.y * 1.0 * 1.0, -1.5, 1.5)
+
 func _physics_process(delta: float) -> void:
 	if not (is_multiplayer_authority()): set_process(false); set_physics_process(false); return
-	controller.steering = lerp(controller.steering, Input.get_axis(\"left\", \"right\") * 0.4, 5 * delta)
-	controller.engine_force = Input.get_axis(\"back\", \"forward\") * 100.0
+	if Input.is_action_just_pressed(\"debug_die\"): die.rpc()
 	
-	setcardata.rpc(controller.global_position,controller.global_rotation)
+	if !(dead):
+		controller.steering = lerp(controller.steering, Input.get_axis(\"left\", \"right\") * 0.4, 5 * delta)
+		controller.engine_force = Input.get_axis(\"back\", \"forward\") * sheep_speed
+		setcardata.rpc(controller.global_position,controller.global_rotation)
+	elif infreecam:
+		var input_dir = Input.get_vector(\"left\",\"right\",\"forward\",\"back\")
+		var forward_dir = %FreeCam.global_transform.basis * Vector3(input_dir.x,0,input_dir.y).normalized()
+		
+		if (Input.is_action_pressed(\"space\")): %FreeCam.global_position.y += 1.0
+		if (Input.is_action_pressed(\"control\")): %FreeCam.global_position.y -= 1.0
+		
+		%FreeCam.global_position.x += forward_dir.x * 1.0
+		%FreeCam.global_position.z += forward_dir.z * 1.0
+		setfreecamdata.rpc(%FreeCam.global_position)
+	
+	var death_collide = %death_ray.is_colliding()
+	if (death_collide) and !(dead):
+		%FreeCam.global_position = Vector3(0,0,0)
+		die.rpc()
 
 # multiplayer calls
 @rpc(\"authority\",\"call_remote\",\"unreliable\")
 func setcardata(newpos,newrot):
 	controller.global_position = newpos
 	controller.global_rotation = newrot
+@rpc(\"authority\",\"call_remote\",\"unreliable\")
+func setfreecamdata(newpos):
+	%FreeCam.global_position = newpos
 
 @rpc(\"authority\",\"call_local\",\"reliable\")
-func userdata(Pusername):
+func userdata(Pusername,Pdead,Pinfreecam):
 	username = Pusername
-
+	dead = Pdead
+	infreecam = Pinfreecam
+@rpc(\"authority\",\"call_local\",\"reliable\")
+func die():
+	if !(dead):
+		print(\"%s HAS DIEDDDDD\" % username)
+		
+		$Controller.freeze = true
+		$Controller/Collision.disabled = true
+		$Controller/sheepmodel.hide()
+		$Controller/VFX/Explosion.play(\"Explode\")
+		$Controller/SFX/Explode.play()
+		
+		sheep_speed = 0.0
+		
+		infreecam = true
+		dead = true
+		$Controller/SFX/Death1.play()
 # multiplayer connects
 func _peer_connected(pid):
-	userdata.rpc(Global.username)
+	userdata.rpc(Global.username,dead,infreecam)
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5pvfp"]
 size = Vector3(1, 0.423, 1.718)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jssbp"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(0, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6r1sy"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(200, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nqkij"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(400, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xvjlw"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(600, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fh75e"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(800, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bkysh"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(1000, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lvyht"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(1200, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_htwuo"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(1400, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_34ecl"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(1600, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fg3d2"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(1800, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1qp14"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(2000, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qgtm8"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(2200, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7muya"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(2400, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y0ns2"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(2600, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rjy6x"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(2800, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g7bc3"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(3000, 0, 200, 284)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_usqfr"]
+atlas = ExtResource("3_jg13i")
+region = Rect2(3200, 0, 200, 284)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vhanp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jssbp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6r1sy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nqkij")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xvjlw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fh75e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bkysh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lvyht")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_htwuo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_34ecl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fg3d2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1qp14")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qgtm8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7muya")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y0ns2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rjy6x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g7bc3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_usqfr")
+}, {
+"duration": 1.0,
+"texture": null
+}],
+"loop": false,
+"name": &"Explode",
+"speed": 20.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": null
+}],
+"loop": true,
+"name": &"NONE",
+"speed": 5.0
+}]
 
 [node name="Player" type="Node3D"]
 script = SubResource("GDScript_ikdab")
@@ -102,13 +300,15 @@ suspension_max_force = 60000.0
 damping_compression = 1.9
 damping_relaxation = 2.0
 
-[node name="Camera3D" type="Camera3D" parent="Controller"]
+[node name="Camera" type="Camera3D" parent="Controller"]
 transform = Transform3D(-1, -3.45797e-08, 8.02931e-08, 0, 0.918446, 0.395546, -8.74228e-08, 0.395546, -0.918446, 0, 2.557, -2.082)
 fov = 110.0
 
 [node name="death_ray" type="RayCast3D" parent="Controller"]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4412, 0)
 target_position = Vector3(0, 1, 0)
+collision_mask = 2
 
 [node name="player_display" type="Label3D" parent="Controller"]
 unique_name_in_owner = true
@@ -117,3 +317,31 @@ layers = 2
 pixel_size = 0.02
 billboard = 1
 text = "STEAMUSER99"
+
+[node name="SFX" type="Node3D" parent="Controller"]
+unique_name_in_owner = true
+
+[node name="Death1" type="AudioStreamPlayer3D" parent="Controller/SFX"]
+stream = ExtResource("2_5pvfp")
+volume_db = -35.0
+max_distance = 10.0
+
+[node name="Explode" type="AudioStreamPlayer3D" parent="Controller/SFX"]
+stream = ExtResource("3_jssbp")
+volume_db = -11.0
+pitch_scale = 1.4
+max_distance = 30.0
+panning_strength = 1.4
+
+[node name="VFX" type="Node3D" parent="Controller"]
+
+[node name="Explosion" type="AnimatedSprite3D" parent="Controller/VFX"]
+pixel_size = 0.03
+billboard = 1
+sprite_frames = SubResource("SpriteFrames_vhanp")
+animation = &"NONE"
+autoplay = "NONE"
+
+[node name="FreeCam" type="Camera3D" parent="."]
+unique_name_in_owner = true
+fov = 110.0
