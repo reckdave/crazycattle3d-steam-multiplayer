@@ -20,7 +20,7 @@ var infreecam : bool = false:
 		if val:
 			%player_display.reparent(%FreeCam,false)
 		else:
-			%player_display.reparent($Controller)
+			%player_display.reparent($Controller,false)
 		infreecam = val
 var username : String = \"steamuser99\":
 	set(val):
@@ -68,7 +68,7 @@ func _physics_process(delta: float) -> void:
 	
 	var death_collide = %death_ray.is_colliding()
 	if (death_collide) and !(dead):
-		%FreeCam.global_position = Vector3(0,0,0)
+		#%FreeCam.global_position = Vector3(0,0,0)
 		die.rpc()
 
 # multiplayer calls
