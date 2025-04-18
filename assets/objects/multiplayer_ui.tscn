@@ -75,6 +75,7 @@ func _on_lobby_match_list(lobbylist : Array):
 
 func _join_lobby(lobby_id):
 	MultiplayerHandler.join_server(0,lobby_id)
+	$\"..\".hide()
 
 func _on_refresh_pressed() -> void:
 	_refresh_lobby()
