@@ -70,12 +70,14 @@ func _on_lobby_match_list(lobbylist : Array):
 		var lobby_mode = Steam.getLobbyData(this_lobby,\"mode\")
 		var lobby_num_players = Steam.getNumLobbyMembers(this_lobby)
 		
+		
+		var lobby_button = Button.new()
+		lobby_button.text = \"%s's | Players: %s\" % [lobby_name,lobby_num_players]
+		lobby_button.name = str(this_lobby)
+		lobby_button.pressed.connect(_join_lobby.bind(this_lobby))
+		$Scroll/ListContainer.add_child(lobby_button)
 		if (lobby_mode) == \"crazycattle3d-multiplayer-git\":
-			var lobby_button = Button.new()
-			lobby_button.text = \"%s's | Players: %s\" % [lobby_name,lobby_num_players]
-			lobby_button.name = str(this_lobby)
-			lobby_button.pressed.connect(_join_lobby.bind(this_lobby))
-			$Scroll/ListContainer.add_child(lobby_button)
+			print(this_lobby)
 
 func _join_lobby(lobby_id):
 	MultiplayerHandler.join_server(0,lobby_id)
@@ -93,6 +95,7 @@ func _on_close_pressed() -> void:
 script = SubResource("GDScript_0yv2m")
 
 [node name="JoinOrHost" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -195,7 +198,6 @@ popup/item_1/text = "FRIENDS ONLY"
 popup/item_1/id = 1
 
 [node name="ServerList" type="Control" parent="."]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
