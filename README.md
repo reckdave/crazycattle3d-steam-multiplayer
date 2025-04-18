@@ -1,3 +1,5 @@
+# all credits go to the original owner of CrazyCattle3D
+
 # CRAZYCATTLE3D MULTIPLAYER
 hi! im just making this for fun. this game uses Steams API and spacewar as its appid.
 
