@@ -10,6 +10,13 @@ func _ready() -> void:
 	Steam.steamInitEx()
 	
 	steamName = Steam.getPersonaName()
+	Global.username = steamName
+	
+	var steam_open = Steam.loggedOn()
+	if !steam_open:
+		OS.alert("YOU DONT HAVE STEAM OPEN MEANING YOU WONT BE ABLE TO JOIN STEAM LOBBYS","WARNING")
+	else:
+		print("steam is open")
 
 func _process(delta: float) -> void:
 	Steam.run_callbacks()

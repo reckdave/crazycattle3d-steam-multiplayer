@@ -22,6 +22,7 @@ func create_server(server_type):
 			var peer = ENetMultiplayerPeer.new()
 			multiplayer.peer_connected.connect(_peer_connected)
 			multiplayer.peer_disconnected.connect(_peer_disconnected)
+			#multiplayer.server_disconnected
 			
 			peer.create_server(port,50)
 			multiplayer.multiplayer_peer = peer
@@ -44,16 +45,21 @@ func join_server(server_type,server_ip):
 func add_sheep(pid):
 	var cloneSheep = sheepScene.instantiate()
 	cloneSheep.name = str(pid)
-	
 	player_spawn.add_child(cloneSheep)
-	
+	lobby_members.append(pid)
+func remove_sheep(pid):
+	if !(player_spawn.has_node(str(pid))):
+		return
+	player_spawn.get_node(str(pid)).queue_free()
+	lobby_members.erase(pid)
+
 # multiplayer connects
 func _peer_connected(id : int):
 	add_sheep(id)
-	print("@mew player")
+	print(lobby_members)
 func _peer_disconnected(id : int):
-	# TODO
-	pass
+	remove_sheep(id)
+	print(lobby_members)
 # steam connects
 func _steam_lobby_created(connect : int, new_lobbyid):
 	if connect == 1:

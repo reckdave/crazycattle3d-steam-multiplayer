@@ -4,16 +4,13 @@
 resource_name = "multiplayerUI"
 script/source = "extends CanvasLayer
 
-var server_type : int = 1
+@onready var server_type : int = $JoinOrHost/MultiType.selected
 
 func _on_host_pressed() -> void:
-	#print(server_type)
 	MultiplayerHandler.create_server(server_type)
 	hide()
 
 func _on_join_pressed() -> void:
-	print(server_type)
-	print($JoinOrHost/serverip.text)
 	MultiplayerHandler.join_server(server_type,$JoinOrHost/serverip.text)
 	hide()
 
@@ -26,6 +23,9 @@ func _on_multi_type_item_selected(chosenOption: int) -> void:
 		1: # LOCAL
 			$JoinOrHost/serverip.placeholder_text = \"127.0.0.1\"
 			$JoinOrHost/serverip.text = \"\"
+
+func _on_name_text_editted(new_text: String) -> void:
+	Global.username = new_text
 "
 
 [node name="MultiplayerUI" type="CanvasLayer"]
@@ -103,4 +103,5 @@ popup/item_1/id = 1
 
 [connection signal="pressed" from="JoinOrHost/HOST" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="JoinOrHost/JOIN" to="." method="_on_join_pressed"]
+[connection signal="text_changed" from="JoinOrHost/name" to="." method="_on_name_text_editted"]
 [connection signal="item_selected" from="JoinOrHost/MultiType" to="." method="_on_multi_type_item_selected"]
