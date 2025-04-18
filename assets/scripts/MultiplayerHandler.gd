@@ -26,7 +26,8 @@ func create_server(server_type):
 			var peer = ENetMultiplayerPeer.new()
 			multiplayer.peer_connected.connect(_peer_connected)
 			multiplayer.peer_disconnected.connect(_peer_disconnected)
-			multiplayer.server_disconnected.connect(_server_closed)
+			#multiplayer.server_disconnected.connect(_server_closed)
+			
 			peer.create_server(port,50,5)
 			multiplayer.multiplayer_peer = peer
 			
@@ -39,12 +40,14 @@ func join_server(server_type,server_ip):
 			peer.connect_lobby(int(server_ip))
 			
 			multiplayer.multiplayer_peer = peer
+			multiplayer.server_disconnected.connect(_server_closed)
 			
 			add_sheep(multiplayer.get_unique_id())
 			lobby_id = int(server_ip)
 		1: #LOCAL
 			var peer = ENetMultiplayerPeer.new()
 			multiplayer.connection_failed.connect(_failed_to_connect)
+			multiplayer.server_disconnected.connect(_server_closed)
 			var error = peer.create_client(default_ip,port)
 			if error:
 				return error
