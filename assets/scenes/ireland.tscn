@@ -10,6 +10,9 @@
 resource_name = "ireland"
 script/source = "extends Node3D
 
+func _version_check():
+	$VersionCheck.request()
+
 func _ready() -> void:
 	MultiplayerHandler.player_spawn = $Players
 "
@@ -200,6 +203,8 @@ visibility_range_end = 50.0
 pixel_size = 0.02
 billboard = 2
 texture = ExtResource("3_vc6ol")
+
+[node name="VersionCheck" type="HTTPRequest" parent="."]
 
 [node name="MultiplayerUI" parent="." instance=ExtResource("1_3dl86")]
 
