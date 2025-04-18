@@ -9,5 +9,5 @@ im planning to add more content and fixes later on
 
 
 
-# WINDOWS DEFENDER FLAGS UNVERIFIED APPS!!
+# WINDOWS DEFENDER FLAGS UNVERIFIED APPS!! (or smth idk) 
 if u really are anxious go on virustotal 🤷‍♂️
