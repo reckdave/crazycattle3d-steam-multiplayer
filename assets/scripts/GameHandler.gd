@@ -35,4 +35,8 @@ func end_game():
 	await get_tree().create_timer(4).timeout
 	world_node.queue_free()
 	alive_players.clear()
+	
+	Steam.setLobbyJoinable(MultiplayerHandler.lobby_id,true)
+	multiplayer.multiplayer_peer.refuse_new_connections = false
+	
 	game_end.emit()
