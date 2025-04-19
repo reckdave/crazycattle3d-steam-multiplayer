@@ -7,7 +7,7 @@ resource_name = "game"
 script/source = "extends Node2D
 
 const version_url = \"https://raw.githubusercontent.com/reckdave/crazycattle3d-steam-multiplayer/refs/heads/main/version.json\"
-const version = \"1.0.8\"
+const version = \"1.0.9\"
 var version_release = \"https://github.com/reckdave/crazycattle3d-steam-multiplayer/releases/tag/v\"
 
 
@@ -34,3 +34,5 @@ script = SubResource("GDScript_cb66b")
 [node name="MultiplayerUI" parent="." instance=ExtResource("1_cb66b")]
 
 [node name="PlayerSpawns" type="Node3D" parent="."]
+
+[connection signal="request_completed" from="VersionCheck" to="." method="_on_version_check_request_completed"]
