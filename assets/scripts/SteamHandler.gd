@@ -10,7 +10,7 @@ func _ready() -> void:
 	Steam.steamInitEx()
 	
 	steamName = Steam.getPersonaName()
-	Global.username = steamName
+	Global.player_data.username = steamName
 	
 	var steam_open = Steam.loggedOn()
 	if !steam_open:

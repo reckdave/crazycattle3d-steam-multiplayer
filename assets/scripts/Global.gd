@@ -1,3 +1,5 @@
 extends Node
 
-var username : String = "steamuser99"
+var player_data = {
+	"username" = "steamuser99"
+}

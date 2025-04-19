@@ -24,16 +24,16 @@ func _on_multi_type_item_selected(chosenOption: int) -> void:
 		0: # STEAM
 			$JoinOrHost/serverip.placeholder_text = \"LOBBY CODE\"
 			$JoinOrHost/serverip.text = \"\"
-			$JoinOrHost/LOBBY.show()
+			#$JoinOrHost/LOBBY.show()
 			$JoinOrHost/LobbyPublic.show()
 		1: # LOCAL
 			$JoinOrHost/serverip.placeholder_text = \"127.0.0.1\"
 			$JoinOrHost/serverip.text = \"\"
-			$JoinOrHost/LOBBY.hide()
-			$JoinOrHost/LobbyPublic.show()
+			#$JoinOrHost/LOBBY.hide()
+			$JoinOrHost/LobbyPublic.hide()
 
 func _on_name_text_editted(new_text: String) -> void:
-	Global.username = new_text
+	Global.player_data.username = new_text
 
 # multiplayer connects
 func _player_left():
@@ -66,6 +66,7 @@ func _refresh_lobby():
 
 func _on_lobby_match_list(lobbylist : Array):
 	for this_lobby in lobbylist:
+		print(this_lobby)
 		var lobby_name = Steam.getLobbyData(this_lobby,\"name\")
 		var lobby_mode = Steam.getLobbyData(this_lobby,\"mode\")
 		var lobby_num_players = Steam.getNumLobbyMembers(this_lobby)
@@ -95,7 +96,6 @@ func _on_close_pressed() -> void:
 script = SubResource("GDScript_0yv2m")
 
 [node name="JoinOrHost" type="Control" parent="."]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -175,7 +175,8 @@ offset_left = -60.5
 offset_right = 60.5
 offset_bottom = 31.0
 grow_horizontal = 2
-selected = 1
+alignment = 1
+selected = 0
 item_count = 2
 popup/item_0/text = "STEAM"
 popup/item_0/id = 0
@@ -183,7 +184,6 @@ popup/item_1/text = "LOCAL/LAN"
 popup/item_1/id = 1
 
 [node name="LobbyPublic" type="OptionButton" parent="JoinOrHost"]
-visible = false
 layout_mode = 0
 offset_left = 108.0
 offset_top = 81.0
@@ -198,6 +198,7 @@ popup/item_1/text = "FRIENDS ONLY"
 popup/item_1/id = 1
 
 [node name="ServerList" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -261,6 +262,15 @@ grow_vertical = 0
 text = "WARNING. JOIN PUBLIC LOBBYS AT YOUR OWN RISK. YOU HAVE BEEN WARNED"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Lobby" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [connection signal="pressed" from="JoinOrHost/HOST" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="JoinOrHost/JOIN" to="." method="_on_join_pressed"]

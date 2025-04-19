@@ -1,34 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://orapkll43iqf"]
+[gd_scene load_steps=9 format=3 uid="uid://orapkll43iqf"]
 
-[ext_resource type="PackedScene" uid="uid://coe4ag08vn4vl" path="res://assets/objects/multiplayer_ui.tscn" id="1_3dl86"]
 [ext_resource type="Texture2D" uid="uid://g8gws3kl1rer" path="res://assets/textures/grass.png" id="1_q5k50"]
 [ext_resource type="PackedScene" uid="uid://b7ywy05yf52t4" path="res://assets/models/fence.tscn" id="2_qqnjc"]
 [ext_resource type="Texture2D" uid="uid://di21hsxbrc6wb" path="res://assets/textures/rollinghills.png" id="3_3dl86"]
 [ext_resource type="Texture2D" uid="uid://bd3yiomqoghfc" path="res://assets/textures/grass_tuft.png" id="3_vc6ol"]
-
-[sub_resource type="GDScript" id="GDScript_3dl86"]
-resource_name = "ireland"
-script/source = "extends Node3D
-
-const version_url = \"https://raw.githubusercontent.com/reckdave/crazycattle3d-steam-multiplayer/refs/heads/main/version.json\"
-const version = \"1.0.6\"
-var version_release = \"https://github.com/reckdave/crazycattle3d-steam-multiplayer/releases/tag/v\"
-
-func _version_check():
-	$VersionCheck.request(version_url)
-
-func _on_version_check_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
-	if response_code == 200:
-		var data = str_to_var(body.get_string_from_utf8())
-		print(data)
-		if version < data[\"VERSION\"]:
-			OS.alert(\"THERE IS A NEW VERSION AVAILABLE!\",\"HEY\")
-			OS.shell_open(version_release + data[\"VERSION\"])
-
-func _ready() -> void:
-	MultiplayerHandler.player_spawn = $Players
-	_version_check()
-"
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qqnjc"]
 panorama = ExtResource("3_3dl86")
@@ -53,7 +28,6 @@ uv1_scale = Vector3(0.05, 0.05, 0.05)
 uv1_triplanar = true
 
 [node name="Ireland" type="Node3D"]
-script = SubResource("GDScript_3dl86")
 
 [node name="Map" type="Node3D" parent="."]
 
@@ -216,16 +190,3 @@ visibility_range_end = 50.0
 pixel_size = 0.02
 billboard = 2
 texture = ExtResource("3_vc6ol")
-
-[node name="VersionCheck" type="HTTPRequest" parent="."]
-
-[node name="MultiplayerUI" parent="." instance=ExtResource("1_3dl86")]
-
-[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("uid://cckjrg5mx6cqp")
-spawn_path = NodePath("../Players")
-
-[node name="Players" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
-
-[connection signal="request_completed" from="VersionCheck" to="." method="_on_version_check_request_completed"]
