@@ -52,6 +52,11 @@ func join_server(server_type,ip):
 			multiplayer.multiplayer_peer = peer
 	return true
 
+func _client_disconnect():
+	multiplayer.multiplayer_peer = null
+	MultiplayerHandler.players = {}
+	MultiplayerHandler.peer = null
+
 # multiplayer rpcs
 @rpc("any_peer","call_remote","reliable")
 func sendplayerdata(data,pid):
