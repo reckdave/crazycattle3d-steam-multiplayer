@@ -7,7 +7,7 @@ resource_name = "game"
 script/source = "extends Node2D
 
 const version_url = \"https://raw.githubusercontent.com/reckdave/crazycattle3d-steam-multiplayer/refs/heads/main/version.json\"
-const version = \"1.0.7\"
+const version = \"1.0.8\"
 var version_release = \"https://github.com/reckdave/crazycattle3d-steam-multiplayer/releases/tag/v\"
 
 
