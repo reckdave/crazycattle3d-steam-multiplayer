@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://orapkll43iqf"]
+[gd_scene load_steps=10 format=3 uid="uid://orapkll43iqf"]
 
 [ext_resource type="Texture2D" uid="uid://g8gws3kl1rer" path="res://assets/textures/grass.png" id="1_q5k50"]
 [ext_resource type="PackedScene" uid="uid://b7ywy05yf52t4" path="res://assets/models/fence.tscn" id="2_qqnjc"]
 [ext_resource type="Texture2D" uid="uid://di21hsxbrc6wb" path="res://assets/textures/rollinghills.png" id="3_3dl86"]
 [ext_resource type="Texture2D" uid="uid://bd3yiomqoghfc" path="res://assets/textures/grass_tuft.png" id="3_vc6ol"]
+[ext_resource type="AudioStream" uid="uid://q2q1tlh2uy0f" path="res://assets/audio/world1.wav" id="5_vc6ol"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qqnjc"]
 panorama = ExtResource("3_3dl86")
@@ -190,3 +191,8 @@ visibility_range_end = 50.0
 pixel_size = 0.02
 billboard = 2
 texture = ExtResource("3_vc6ol")
+
+[node name="MUSIC" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_vc6ol")
+volume_db = -10.0
+autoplay = true

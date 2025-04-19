@@ -13,13 +13,15 @@ config_version=5
 config/name="CrazyCattle3D Steam Multiplayer"
 run/main_scene="uid://dufyaukxq2pv8"
 config/features=PackedStringArray("4.4", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="uid://b2kc0sncv6x3y"
+config/windows_native_icon="res://crazyicon.ico"
 
 [autoload]
 
 Global="*res://assets/scripts/Global.gd"
 SteamHandler="*res://assets/scripts/SteamHandler.gd"
 MultiplayerHandler="*res://assets/scripts/MultiplayerHandler.gd"
+GameHandler="*res://assets/scripts/GameHandler.gd"
 
 [debug]
 
@@ -31,6 +33,7 @@ window/size/viewport_width=640
 window/size/viewport_height=480
 window/stretch/mode="viewport"
 window/stretch/aspect="ignore"
+mouse_cursor/custom_image="uid://dde5f537aerd"
 
 [input]
 

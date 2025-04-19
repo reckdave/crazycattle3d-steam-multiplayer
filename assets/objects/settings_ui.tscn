@@ -9,7 +9,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		$UI.visible = !$UI.visible
 
 func _on_disconnect_pressed() -> void:
-	MultiplayerHandler.player_leave.emit()
+	pass
+#	MultiplayerHandler.player_leave.emit()
 	#multiplayer.multiplayer_peer.disconnect_peer(1)
 "
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://coe4ag08vn4vl"]
+[gd_scene load_steps=4 format=3 uid="uid://coe4ag08vn4vl"]
 
 [sub_resource type="GDScript" id="GDScript_0yv2m"]
 resource_name = "multiplayerUI"
@@ -7,19 +7,22 @@ script/source = "extends CanvasLayer
 @onready var server_type : int = $JoinOrHost/MultiType.selected
 
 func _ready() -> void:
-	MultiplayerHandler.player_leave.connect(_player_left)
-	multiplayer.server_disconnected.connect(_player_left)
+	MultiplayerHandler.failed_to_connect.connect(_restart_ui)
 
 func _on_host_pressed() -> void:
-	MultiplayerHandler.create_server(server_type,$JoinOrHost/LobbyPublic.selected)
-	hide()
+	var successful = MultiplayerHandler.create_server(server_type,$JoinOrHost/LobbyPublic.selected)
+	if successful:
+		$JoinOrHost.hide()
+		$Lobby.show()
 
 func _on_join_pressed() -> void:
-	MultiplayerHandler.join_server(server_type,$JoinOrHost/serverip.text)
-	hide()
+	var successful = MultiplayerHandler.join_server(server_type,\"127.0.0.1\")
+	if successful:
+		$JoinOrHost.hide()
+		$Lobby.show()
 
-func _on_multi_type_item_selected(chosenOption: int) -> void:
-	server_type = chosenOption
+
+func change_ui(chosenOption : int):
 	match (chosenOption):
 		0: # STEAM
 			$JoinOrHost/serverip.placeholder_text = \"LOBBY CODE\"
@@ -32,22 +35,16 @@ func _on_multi_type_item_selected(chosenOption: int) -> void:
 			#$JoinOrHost/LOBBY.hide()
 			$JoinOrHost/LobbyPublic.hide()
 
+func _on_multi_type_item_selected(chosenOption: int) -> void:
+	server_type = chosenOption
+	change_ui(chosenOption)
+
 func _on_name_text_editted(new_text: String) -> void:
 	Global.player_data.username = new_text
 
-# multiplayer connects
-func _player_left():
-	multiplayer.multiplayer_peer = null
-	for player in $\"../Players\".get_children():
-		player.queue_free()
-	MultiplayerHandler.lobby_members.clear()
-	MultiplayerHandler.lobby_id = 0
-	show()
-
-func _on_lobby_pressed() -> void:
-	$ServerList._refresh_lobby()
-	$ServerList.show()
-	$JoinOrHost.hide()
+# multiplayer calls
+func _restart_ui():
+	change_ui(0)
 "
 
 [sub_resource type="GDScript" id="GDScript_twxod"]
@@ -90,6 +87,44 @@ func _on_refresh_pressed() -> void:
 func _on_close_pressed() -> void:
 	hide()
 	$\"../JoinOrHost\".show()
+"
+
+[sub_resource type="GDScript" id="GDScript_nwlmj"]
+resource_name = "LOBBY"
+script/source = "extends Control
+
+@onready var sheep_scene : PackedScene = preload(\"res://assets/objects/player.tscn\")
+
+func _ready() -> void:
+	MultiplayerHandler.updated_player_list.connect(_update_playerlist)
+	GameHandler.game_started.connect(_game_started)
+	GameHandler.game_end.connect(_game_ended)
+
+func _on_start_pressed() -> void:
+	GameHandler.start_game.rpc()
+func _on_disconnect_pressed() -> void:
+	multiplayer.multiplayer_peer = null
+	MultiplayerHandler.players = {}
+	MultiplayerHandler.peer = null
+	$\"../JoinOrHost\".show()
+	hide()
+
+func _game_started():
+	hide()
+func _game_ended():
+	show()
+
+# multiplayer calls
+func _update_playerlist():
+	await get_tree().create_timer(0.2).timeout
+	for playerobj in $ScrollPlayers/List.get_children():
+		playerobj.queue_free()
+	
+	for player in MultiplayerHandler.players:
+		var playerbutton : Button = Button.new()
+		playerbutton.name = str(MultiplayerHandler.players[player][\"pid\"])
+		playerbutton.text = MultiplayerHandler.players[player][\"username\"]
+		$ScrollPlayers/List.add_child(playerbutton)
 "
 
 [node name="MultiplayerUI" type="CanvasLayer"]
@@ -163,7 +198,7 @@ offset_right = 147.0
 offset_bottom = -167.0
 grow_horizontal = 2
 grow_vertical = 2
-placeholder_text = "127.0.0.1"
+placeholder_text = "LOBBY CODE"
 alignment = 1
 
 [node name="MultiType" type="OptionButton" parent="JoinOrHost"]
@@ -190,12 +225,16 @@ offset_top = 81.0
 offset_right = 254.0
 offset_bottom = 112.0
 alignment = 1
-selected = 0
-item_count = 2
-popup/item_0/text = "PUBLIC"
-popup/item_0/id = 0
+selected = 1
+item_count = 4
+popup/item_0/text = "PRIVATE"
+popup/item_0/id = 2
 popup/item_1/text = "FRIENDS ONLY"
 popup/item_1/id = 1
+popup/item_2/text = "PUBLIC"
+popup/item_2/id = 0
+popup/item_3/text = "INVISIBLE"
+popup/item_3/id = 3
 
 [node name="ServerList" type="Control" parent="."]
 visible = false
@@ -271,6 +310,49 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = SubResource("GDScript_nwlmj")
+
+[node name="ScrollPlayers" type="ScrollContainer" parent="Lobby"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -386.0
+offset_top = -147.0
+offset_right = -35.0
+offset_bottom = 147.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="List" type="VBoxContainer" parent="Lobby/ScrollPlayers"]
+custom_minimum_size = Vector2(350, 20)
+layout_mode = 2
+
+[node name="DISCONNECT" type="Button" parent="Lobby"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 51.0
+offset_top = -198.0
+offset_right = 145.0
+offset_bottom = -167.0
+grow_vertical = 2
+text = "Disconnect"
+
+[node name="START" type="Button" parent="Lobby"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 21.0
+offset_top = -159.0
+offset_right = 181.0
+offset_bottom = -128.0
+grow_vertical = 2
+text = "START (HOST ONLY)"
 
 [connection signal="pressed" from="JoinOrHost/HOST" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="JoinOrHost/JOIN" to="." method="_on_join_pressed"]
@@ -279,3 +361,5 @@ grow_vertical = 2
 [connection signal="item_selected" from="JoinOrHost/MultiType" to="." method="_on_multi_type_item_selected"]
 [connection signal="pressed" from="ServerList/REFRESH" to="ServerList" method="_on_refresh_pressed"]
 [connection signal="pressed" from="ServerList/CLOSE" to="ServerList" method="_on_close_pressed"]
+[connection signal="pressed" from="Lobby/DISCONNECT" to="Lobby" method="_on_disconnect_pressed"]
+[connection signal="pressed" from="Lobby/START" to="Lobby" method="_on_start_pressed"]

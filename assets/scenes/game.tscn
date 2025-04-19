@@ -11,7 +11,6 @@ const version = \"1.0.7\"
 var version_release = \"https://github.com/reckdave/crazycattle3d-steam-multiplayer/releases/tag/v\"
 
 
-
 func _version_check():
 	$VersionCheck.request(version_url)
 

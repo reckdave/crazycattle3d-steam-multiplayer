@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://cckjrg5mx6cqp"]
+[gd_scene load_steps=29 format=3 uid="uid://cckjrg5mx6cqp"]
 
 [ext_resource type="PackedScene" uid="uid://kpnlifa2cxf7" path="res://assets/objects/settings_ui.tscn" id="1_6r1sy"]
 [ext_resource type="PackedScene" uid="uid://dp16chaj03n5u" path="res://assets/models/sheepmodel.tscn" id="1_ikdab"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://cdovwkedvp0um" path="res://assets/textures/thegouls.jpg" id="2_xvjlw"]
 [ext_resource type="Texture2D" uid="uid://nohi363i1m8t" path="res://assets/textures/explosion-Sheet.png" id="3_jg13i"]
 [ext_resource type="AudioStream" uid="uid://jccsstg3m8ue" path="res://assets/audio/explode.wav" id="3_jssbp"]
+[ext_resource type="AudioStream" uid="uid://dhgigyh074s3d" path="res://assets/audio/baa.wav" id="5_fh75e"]
 [ext_resource type="FontFile" uid="uid://b6jjdr4a7agoe" path="res://assets/IMPACT.TTF" id="6_nqkij"]
 
 [sub_resource type="GDScript" id="GDScript_ikdab"]
@@ -48,14 +49,11 @@ func _enter_tree() -> void:
 	set_multiplayer_authority(int(str(name)))
 
 func _ready() -> void:
-	if !(is_multiplayer_authority()): return
-	multiplayer.peer_connected.connect(_peer_connected)
+	%player_display.text = MultiplayerHandler.players[int(name)][\"username\"]
+	if !(is_multiplayer_authority()):$UI.hide(); $SettingsMenu.hide(); return
 	$Controller/Camera.current = true
 	%player_display.hide()
 	
-	await get_tree().create_timer(1).timeout
-	userdata.rpc(Global.username,dead,infreecam)
-
 func _unhandled_input(event: InputEvent) -> void:
 	if !(is_multiplayer_authority()): return
 	if (infreecam) and event is InputEventMouseMotion:
@@ -67,12 +65,14 @@ func _physics_process(delta: float) -> void:
 	if not (is_multiplayer_authority()): set_process(false); set_physics_process(false); return
 	if Input.is_action_just_pressed(\"debug_die\"): die.rpc()
 	#if Input.is_action_just_pressed(\"debug_respawn\"): respawn.rpc()
-	
+	$UI/Control/Remaining.text = \"%s remain.\" % str(GameHandler.alive_players.size() - 1)
 	if !(dead):
 		#if !(has_node(\"Controller\")): return
 		$Controller.steering = lerp($Controller.steering, Input.get_axis(\"left\", \"right\") * 0.4, 5 * delta)
 		$Controller.engine_force = Input.get_axis(\"back\", \"forward\") * sheep_speed
 		setcardata.rpc($Controller.global_position,$Controller.global_rotation)
+		if Input.is_action_just_pressed(\"space\"):
+			baa_sound.rpc()
 	elif (infreecam) and (dead):
 		var input_dir = Input.get_vector(\"left\",\"right\",\"forward\",\"back\")
 		var forward_dir = %FreeCam.global_transform.basis * Vector3(input_dir.x,0,input_dir.y).normalized()
@@ -80,8 +80,8 @@ func _physics_process(delta: float) -> void:
 		if (Input.is_action_pressed(\"space\")): %FreeCam.global_position.y += 1.0
 		if (Input.is_action_pressed(\"control\")): %FreeCam.global_position.y -= 1.0
 		
-		%FreeCam.global_position.x += forward_dir.x * 1.0
-		%FreeCam.global_position.z += forward_dir.z * 1.0
+		%FreeCam.global_position.x += forward_dir.x * 0.6
+		%FreeCam.global_position.z += forward_dir.z * 0.6
 		setfreecamdata.rpc(%FreeCam.global_position)
 	
 	var death_collide = %death_ray.is_colliding()
@@ -97,20 +97,24 @@ func setcardata(newpos,newrot):
 @rpc(\"authority\",\"call_remote\",\"unreliable\",0)
 func setfreecamdata(newpos):
 	%FreeCam.global_position = newpos
+@rpc(\"authority\",\"call_local\",\"unreliable\",0)
+func baa_sound():
+	$Controller/SFX/Baa.play()
 
-@rpc(\"authority\",\"call_local\",\"reliable\",0)
-func userdata(Pusername,Pdead,Pinfreecam):
-	username = Pusername
-	dead = Pdead
-	infreecam = Pinfreecam
-	
-	$Controller/theghoul.hide()
-	if (username == \"\") or (username == \"steamuser99\"):
-		$Controller/theghoul.show()
+#@rpc(\"authority\",\"call_local\",\"reliable\",0)
+#func userdata(Pusername,Pdead,Pinfreecam):
+#	username = Pusername
+#	dead = Pdead
+#	infreecam = Pinfreecam
+#	
+#	$Controller/theghoul.hide()
+#	if (username == \"\") or (username == \"steamuser99\"):
+#		$Controller/theghoul.show()
+
 @rpc(\"authority\",\"call_local\",\"reliable\",0)
 func die():
 	if !(dead):
-		print(\"%s HAS DIEDDDDD\" % username)
+		print(\"%s HAS DIED\" % username)
 		
 		$Controller/VFX/Explosion.play(\"Explode\")
 		$Controller/SFX/Explode.play()
@@ -120,23 +124,26 @@ func die():
 		
 		infreecam = true
 		dead = true
-@rpc(\"authority\",\"call_local\",\"reliable\",0)
-func respawn():
-	if (dead):
-		print(\"revive %s\" % username)
-		
-		$Controller.global_rotation = Vector3(0,0,0)
-		$Controller.global_position = Vector3(0,2,0)
-		$Controller/VFX/Explosion.play(\"NONE\")
-		
-		sheep_speed = 100.0
-		dead = false
-		infreecam = false
+		GameHandler.alive_players.erase(int(name))
+		if (multiplayer.is_server()):
+			if GameHandler.alive_players.size() <= 1:
+				GameHandler.end_game.rpc()
+#@rpc(\"authority\",\"call_local\",\"reliable\",0)
+#func respawn():
+#	if (dead):
+#		print(\"revive %s\" % username)
+#		
+#		$Controller.global_rotation = Vector3(0,0,0)
+#		$Controller.global_position = Vector3(0,2,0)
+#		$Controller/VFX/Explosion.play(\"NONE\")
+#		
+#		sheep_speed = 100.0
+#		dead = false
+#		infreecam = false
 		
 		#setcardata.rpc($Controller.global_position,$Controller.global_rotation)
+
 # multiplayer connects
-func _peer_connected(_pid):
-	userdata.rpc(Global.username,dead,infreecam)
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_6r1sy"]
@@ -353,6 +360,7 @@ text = "STEAMUSER99"
 
 [node name="theghoul" type="Sprite3D" parent="Controller"]
 transform = Transform3D(0.7, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+visible = false
 pixel_size = 0.005
 billboard = 1
 texture = ExtResource("2_xvjlw")
@@ -369,8 +377,14 @@ max_distance = 10.0
 stream = ExtResource("3_jssbp")
 volume_db = -11.0
 pitch_scale = 1.4
-max_distance = 100.0
+max_distance = 300.0
 panning_strength = 1.4
+
+[node name="Baa" type="AudioStreamPlayer3D" parent="Controller/SFX"]
+stream = ExtResource("5_fh75e")
+volume_db = -15.0
+max_db = 0.6
+max_distance = 40.0
 
 [node name="VFX" type="Node3D" parent="Controller"]
 
@@ -403,6 +417,37 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_fonts/normal_font = ExtResource("6_nqkij")
 theme_override_font_sizes/normal_font_size = 12
 text = "CrazyCattle3D Multiplayer Release 1.0"
+
+[node name="Title2" type="RichTextLabel" parent="UI/Control"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -209.0
+offset_right = 213.0
+offset_bottom = -169.0
+grow_vertical = 2
+scale = Vector2(4, 1.6)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_fonts/normal_font = ExtResource("6_nqkij")
+theme_override_font_sizes/normal_font_size = 12
+text = "Join the Discord"
+
+[node name="Remaining" type="RichTextLabel" parent="UI/Control"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -2.0
+offset_top = -61.0
+offset_right = 211.0
+offset_bottom = -21.0
+grow_vertical = 0
+scale = Vector2(6, 3)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_fonts/normal_font = ExtResource("6_nqkij")
+theme_override_font_sizes/normal_font_size = 12
+text = "0 remain."
 
 [node name="FreeCam" type="Camera3D" parent="."]
 unique_name_in_owner = true
