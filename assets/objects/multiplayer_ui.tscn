@@ -16,7 +16,7 @@ func _on_host_pressed() -> void:
 		$Lobby.show()
 
 func _on_join_pressed() -> void:
-	var successful = MultiplayerHandler.join_server(server_type,\"127.0.0.1\")
+	var successful = MultiplayerHandler.join_server(server_type,$JoinOrHost/serverip.text)
 	if successful:
 		$JoinOrHost.hide()
 		$Lobby.show()

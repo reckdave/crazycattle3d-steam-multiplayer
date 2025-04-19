@@ -21,8 +21,8 @@ func create_server(server_type,visibility):
 	match (server_type):
 		0: # STEAM
 			peer = SteamMultiplayerPeer.new()
-			peer.create_lobby(visibility,50)
 			peer.lobby_created.connect(_on_lobby_created)
+			peer.create_lobby(visibility,32)
 			
 			multiplayer.multiplayer_peer = peer
 		1: #LOCAL
@@ -38,8 +38,11 @@ func join_server(server_type,ip):
 	match (server_type):
 		0: # STEAM
 			peer = SteamMultiplayerPeer.new()
-			peer.connect_lobby(int(ip))
 			peer.lobby_joined.connect(_on_lobby_joined)
+			peer.connect_lobby(int(ip))
+			
+			
+			multiplayer.multiplayer_peer = peer
 		1: # LOCAL
 			peer = ENetMultiplayerPeer.new()
 			var error = peer.create_client(ip,port)
@@ -96,7 +99,8 @@ func _on_lobby_created(connect: int, this_lobby_id: int) -> void:
 		#print("Allowing Steam to be relay backup: %s" % set_relay)
 func _on_lobby_joined(this_lobby_id: int, _permissions: int, _locked: bool, response: int) -> void:
 	# If joining was successful
-	if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
+	print("joining lobby..")
+	if response == 1:
 		# Set this lobby ID as your lobby ID
+		print("success!")
 		lobby_id = this_lobby_id
-		sendplayerdata.rpc_id(1,Global.player_data,multiplayer.get_unique_id())
