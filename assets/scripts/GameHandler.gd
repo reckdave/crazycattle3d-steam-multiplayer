@@ -25,7 +25,6 @@ func start_game(world : PackedScene = load("res://assets/scenes/ireland.tscn")):
 		var new_player = sheep_scene.instantiate()
 		new_player.name = str(player)
 		new_player.username = str(MultiplayerHandler.players[player]["username"])
-		new_player.global_position = Vector3(randi_range(-100,100),5,randi_range(-100,100))
 		alive_players.append(player)
 		world_node.add_child(new_player)
 	game_started.emit()

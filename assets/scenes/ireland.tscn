@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://orapkll43iqf"]
+[gd_scene load_steps=11 format=3 uid="uid://orapkll43iqf"]
 
 [ext_resource type="Texture2D" uid="uid://g8gws3kl1rer" path="res://assets/textures/grass.png" id="1_q5k50"]
 [ext_resource type="PackedScene" uid="uid://b7ywy05yf52t4" path="res://assets/models/fence.tscn" id="2_qqnjc"]
@@ -27,6 +27,9 @@ ssao_intensity = 15.0
 albedo_texture = ExtResource("1_q5k50")
 uv1_scale = Vector3(0.05, 0.05, 0.05)
 uv1_triplanar = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vc6ol"]
+size = Vector3(600, 20, 600)
 
 [node name="Ireland" type="Node3D"]
 
@@ -191,6 +194,15 @@ visibility_range_end = 50.0
 pixel_size = 0.02
 billboard = 2
 texture = ExtResource("3_vc6ol")
+
+[node name="DeathBarriar" type="Area3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 22, 0)
+collision_layer = 6
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/DeathBarriar"]
+shape = SubResource("BoxShape3D_vc6ol")
+debug_color = Color(0.913725, 0.164706, 0.592157, 0.784314)
 
 [node name="MUSIC" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("5_vc6ol")
