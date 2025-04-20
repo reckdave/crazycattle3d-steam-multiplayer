@@ -33,6 +33,8 @@ func start_game(world : PackedScene = load("res://assets/scenes/ireland.tscn")):
 @rpc("authority","call_local","reliable")
 func end_game():
 	await get_tree().create_timer(4).timeout
+	if world_node == null: return
+	
 	world_node.queue_free()
 	alive_players.clear()
 	
