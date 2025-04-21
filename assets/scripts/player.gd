@@ -70,7 +70,7 @@ func _physics_process(delta: float) -> void:
 			setcardata.rpc($Controller.global_position,$Controller.global_rotation)
 		
 		if Input.is_action_just_pressed("space"):
-			$Controller.linear_velocity = Vector3(0,20,0)
+			#$Controller.linear_velocity = Vector3(0,20,0)
 			baa_sound.rpc()
 	elif (infreecam) and (dead):
 		var input_dir = Input.get_vector("left","right","forward","back")
@@ -88,7 +88,7 @@ var try_time : float = 1
 
 func _process(delta: float) -> void:
 	$UI/Control/Remaining.text = "%s left alive." % str(GameHandler.alive_players.size())
-	if (Input.is_action_just_pressed("ui_down")): GameHandler.world_node.get_node("Map/DeathBarriar").queue_free()
+	#if (Input.is_action_just_pressed("ui_down")): GameHandler.world_node.get_node("Map/DeathBarriar").queue_free()
 	if !(multiplayer.is_server()):
 		return
 	else:
