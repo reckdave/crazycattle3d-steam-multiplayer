@@ -71,7 +71,7 @@ func sendplayerdata(data,pid):
 			sendplayerdata.rpc(players[player],player)
 
 # multiplayer connects
-func _peer_connected(pid):
+func _peer_connected(_pid):
 	pass
 func _peer_disconnected(pid):
 	players.erase(pid)
@@ -81,6 +81,7 @@ func _connected_to_server():
 	sendplayerdata.rpc_id(1,Global.player_data,multiplayer.get_unique_id())
 func _connection_failed():
 	failed_to_connect.emit()
+
 # STEAM
 func _on_lobby_created(connect: int, this_lobby_id: int) -> void:
 	if connect == 1:

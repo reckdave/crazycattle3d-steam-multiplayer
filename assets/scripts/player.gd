@@ -42,11 +42,11 @@ func _ready() -> void:
 	%player_display.text = MultiplayerHandler.players[int(name)]["username"]
 	multiplayer.peer_disconnected.connect(_on_player_leave)
 	
+	
 	if !(is_multiplayer_authority()):$UI.hide(); $SettingsMenu.hide(); return
 	$Controller/Camera.current = true
 	%player_display.hide()
 	global_position = Vector3(randi_range(-80,80),1,randi_range(-80,80))
-	
 func _unhandled_input(event: InputEvent) -> void:
 	if !(is_multiplayer_authority()): return
 	if (infreecam) and event is InputEventMouseMotion:
@@ -58,12 +58,17 @@ func _physics_process(delta: float) -> void:
 	if not (is_multiplayer_authority()): set_physics_process(false); return
 	if Input.is_action_just_pressed("debug_die"): die.rpc()
 	#if Input.is_action_just_pressed("debug_respawn"): respawn.rpc()
-	$UI/Control/Remaining.text = "%s remain." % str(GameHandler.alive_players.size() - 1)
 	if !(dead):
 		#if !(has_node("Controller")): return
 		$Controller.steering = lerp($Controller.steering, Input.get_axis("left", "right") * 0.4, 5 * delta)
 		$Controller.engine_force = Input.get_axis("back", "forward") * sheep_speed
-		setcardata.rpc($Controller.global_position,$Controller.global_rotation,$Controller.steering,$Controller.engine_force)
+		
+		setcarforce.rpc($Controller.engine_force,$Controller.steering)
+		tick_rate += 1
+		
+		if tick_rate >= 8 :
+			setcardata.rpc($Controller.global_position,$Controller.global_rotation)
+		
 		if Input.is_action_just_pressed("space"):
 			$Controller.linear_velocity = Vector3(0,20,0)
 			baa_sound.rpc()
@@ -78,22 +83,46 @@ func _physics_process(delta: float) -> void:
 		%FreeCam.global_position.z += forward_dir.z * 0.6
 		setfreecamdata.rpc(%FreeCam.global_position)
 
+var can_try : bool = false
+var try_time : float = 1
+
 func _process(delta: float) -> void:
-	if !(multiplayer.is_server()): return
+	$UI/Control/Remaining.text = "%s left alive." % str(GameHandler.alive_players.size())
+	if (Input.is_action_just_pressed("ui_down")): GameHandler.world_node.get_node("Map/DeathBarriar").queue_free()
+	if !(multiplayer.is_server()):
+		return
+	else:
+		try_time -= delta;
+	if !(can_try): 
+		if (try_time <= 0): can_try = true
+		return
+	
 	var dead_collide = %death_ray.is_colliding()
-	var death_area_collide = $Controller/DeathArea.get_overlapping_bodies().size() + $Controller/DeathArea.get_overlapping_areas().size()
+	var death_area_collide = $Controller/DeathArea.get_overlapping_bodies().size()
+	var inside_zone = $Controller/ZoneArea.get_overlapping_areas().size()
+	
 	if !(dead):
-		if (dead_collide) or (death_area_collide > 0):
+		if (dead_collide) or (inside_zone <= 0) or (death_area_collide > 0):
 			die.rpc()
 # multiplayer calls
+
+#@rpc("any_peer","call_local","reliable",0)
+#func push_collide(body):
+	#if (multiplayer.get_remote_sender_id() != 1): return
+	#body.apply_impulse($Controller.linear_velocity)
+
 @rpc("authority","call_remote","unreliable",0)
-func setcardata(newpos,newrot,newsteer,newforce):
+func setcardata(newpos,newrot):
 	if !(has_node("Controller")): return
 	$Controller.global_position = lerp($Controller.global_position,newpos,0.4)
 	$Controller.global_rotation = newrot
-	
+
+@rpc("authority","call_remote","unreliable",0)
+func setcarforce(newforce,newsteer):
+	if !(has_node("Controller")): return
 	$Controller.engine_force = newforce
 	$Controller.steering = newsteer
+
 @rpc("authority","call_remote","unreliable",0)
 func setfreecamdata(newpos):
 	%FreeCam.global_position = newpos
@@ -129,9 +158,8 @@ func die():
 		infreecam = true
 		dead = true
 		GameHandler.alive_players.erase(int(name))
-		if (multiplayer.is_server()):
-			if GameHandler.alive_players.size() <= 1:
-				GameHandler.end_game.rpc()
+		GameHandler.player_removed.emit(int(name))
+
 #@rpc("authority","call_local","reliable",0)
 #func respawn():
 #	if (dead):
@@ -150,6 +178,16 @@ func die():
 # multiplayer connects
 func _on_player_leave(pid):
 	if pid == int(name):
-		if GameHandler.alive_players.has(pid): GameHandler.alive_players.erase(pid)
-		if (multiplayer.is_server()): if GameHandler.alive_players.size() <= 1: GameHandler.end_game.rpc()
+		if GameHandler.alive_players.has(pid): GameHandler.alive_players.erase(pid); GameHandler.player_removed.emit(int(name))
 		queue_free()
+
+
+#func _on_collision_bump_area_entered(area: Area3D) -> void:
+	#print(area.get_parent().name)
+	#if !(multiplayer.is_server()): return
+	#push_collide.rpc(area.get_parent())
+
+# MISC
+func _on_chat_type_text_submitted(new_text: String) -> void:
+	#send_message.rpc(new_text)
+	pass

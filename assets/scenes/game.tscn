@@ -7,14 +7,14 @@ resource_name = "game"
 script/source = "extends Node2D
 
 const version_url = \"https://raw.githubusercontent.com/reckdave/crazycattle3d-steam-multiplayer/refs/heads/main/version.json\"
-const version = \"1.1.0\"
+const version = \"1.1.1\"
 var version_release = \"https://github.com/reckdave/crazycattle3d-steam-multiplayer/releases/tag/v\"
 
 
 func _version_check():
 	$VersionCheck.request(version_url)
 
-func _on_version_check_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+func _on_version_check_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
 	if response_code == 200:
 		var data = str_to_var(body.get_string_from_utf8())
 		print(data)

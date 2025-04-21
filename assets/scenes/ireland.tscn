@@ -29,7 +29,7 @@ uv1_scale = Vector3(0.05, 0.05, 0.05)
 uv1_triplanar = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vc6ol"]
-size = Vector3(600, 20, 600)
+size = Vector3(260, 8, 260)
 
 [node name="Ireland" type="Node3D"]
 
@@ -196,8 +196,8 @@ billboard = 2
 texture = ExtResource("3_vc6ol")
 
 [node name="DeathBarriar" type="Area3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 22, 0)
-collision_layer = 6
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+collision_layer = 16
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Map/DeathBarriar"]

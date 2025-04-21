@@ -270,6 +270,22 @@ collision_mask = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("BoxShape3D_bkysh")
 
+[node name="ZoneArea" type="Area3D" parent="Controller"]
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Controller/ZoneArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_bkysh")
+
+[node name="CollisionBump" type="Area3D" parent="Controller"]
+collision_layer = 8
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Controller/CollisionBump"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_bkysh")
+
 [node name="SettingsMenu" parent="." instance=ExtResource("1_6r1sy")]
 
 [node name="UI" type="CanvasLayer" parent="."]
@@ -293,7 +309,7 @@ theme_override_fonts/normal_font = ExtResource("6_nqkij")
 theme_override_font_sizes/normal_font_size = 12
 text = "CrazyCattle3D Multiplayer Release 1.0"
 
-[node name="Title2" type="RichTextLabel" parent="UI/Control"]
+[node name="DC" type="RichTextLabel" parent="UI/Control"]
 layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
@@ -324,6 +340,45 @@ theme_override_fonts/normal_font = ExtResource("6_nqkij")
 theme_override_font_sizes/normal_font_size = 12
 text = "0 remain."
 
+[node name="ChatScroll" type="ScrollContainer" parent="UI/Control"]
+visible = false
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -308.0
+offset_top = -131.0
+offset_bottom = -31.0
+grow_horizontal = 0
+grow_vertical = 0
+vertical_scroll_mode = 0
+
+[node name="List" type="VBoxContainer" parent="UI/Control/ChatScroll"]
+clip_contents = true
+custom_minimum_size = Vector2(308, 20)
+layout_mode = 2
+alignment = 1
+
+[node name="ChatType" type="LineEdit" parent="UI/Control"]
+visible = false
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -308.0
+offset_top = -31.0
+grow_horizontal = 0
+grow_vertical = 0
+placeholder_text = "Type here."
+max_length = 50
+
 [node name="FreeCam" type="Camera3D" parent="."]
 unique_name_in_owner = true
 fov = 110.0
+
+[connection signal="area_entered" from="Controller/CollisionBump" to="." method="_on_collision_bump_area_entered"]
+[connection signal="text_submitted" from="UI/Control/ChatType" to="." method="_on_chat_type_text_submitted"]
