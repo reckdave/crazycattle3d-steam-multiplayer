@@ -6,6 +6,7 @@ const default_ip : String = "127.0.0.1"
 var peer
 var players : Dictionary = {}
 var lobby_id : int = 0
+var max_players : int = 32
 
 signal updated_player_list
 signal failed_to_connect
@@ -22,12 +23,12 @@ func create_server(server_type,visibility):
 		0: # STEAM
 			peer = SteamMultiplayerPeer.new()
 			peer.lobby_created.connect(_on_lobby_created)
-			peer.create_lobby(visibility,32)
+			peer.create_lobby(visibility,max_players)
 			
 			multiplayer.multiplayer_peer = peer
 		1: #LOCAL
 			peer = ENetMultiplayerPeer.new()
-			var error = peer.create_server(port,50)
+			var error = peer.create_server(port,max_players)
 			if error:
 				peer = null
 				return error

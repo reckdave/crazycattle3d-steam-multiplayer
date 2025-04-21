@@ -83,6 +83,10 @@ debug_respawn={
 ]
 }
 
+[layer_names]
+
+3d_physics/layer_10="PLAYER"
+
 [steam]
 
 initialization/app_id=480

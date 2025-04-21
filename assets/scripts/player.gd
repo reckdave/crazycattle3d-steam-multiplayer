@@ -84,6 +84,7 @@ func _physics_process(delta: float) -> void:
 		setfreecamdata.rpc(%FreeCam.global_position)
 
 var can_try : bool = false
+var can_impulse : bool = true
 var try_time : float = 1
 
 func _process(delta: float) -> void:
@@ -101,15 +102,31 @@ func _process(delta: float) -> void:
 	var death_area_collide = $Controller/DeathArea.get_overlapping_bodies().size()
 	var inside_zone = $Controller/ZoneArea.get_overlapping_areas().size()
 	
+	if (%impulse_ray.is_colliding()):
+		if (can_impulse):
+			apply_push.rpc(%impulse_ray.get_collider().get_parent().name,$Controller.linear_velocity)
+			can_impulse = false
+			print("sending")
+	else:
+		can_impulse = true
+	
 	if !(dead):
 		if (dead_collide) or (inside_zone <= 0) or (death_area_collide > 0):
 			die.rpc()
+	
+	
 # multiplayer calls
 
 #@rpc("any_peer","call_local","reliable",0)
 #func push_collide(body):
 	#if (multiplayer.get_remote_sender_id() != 1): return
 	#body.apply_impulse($Controller.linear_velocity)
+
+@rpc("any_peer","call_local","reliable")
+func apply_push(pid,force):
+	if (multiplayer.get_remote_sender_id() != 1): return
+	var plr = GameHandler.get_player(pid)
+	plr.get_node("Controller").apply_impulse(force * 0.75)
 
 @rpc("authority","call_remote","unreliable",0)
 func setcardata(newpos,newrot):

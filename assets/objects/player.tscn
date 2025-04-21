@@ -158,6 +158,7 @@ size = Vector3(1, 2, 3)
 script = ExtResource("1_bkysh")
 
 [node name="Controller" type="VehicleBody3D" parent="."]
+collision_layer = 513
 mass = 30.0
 
 [node name="Collision" type="CollisionShape3D" parent="Controller"]
@@ -216,6 +217,11 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4412, 0)
 target_position = Vector3(0, 1, 0)
 collision_mask = 2
+
+[node name="impulse_ray" type="RayCast3D" parent="Controller"]
+unique_name_in_owner = true
+target_position = Vector3(0, 0, 2)
+collision_mask = 512
 
 [node name="player_display" type="Label3D" parent="Controller"]
 unique_name_in_owner = true
@@ -279,8 +285,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("BoxShape3D_bkysh")
 
 [node name="CollisionBump" type="Area3D" parent="Controller"]
-collision_layer = 8
-collision_mask = 8
+collision_layer = 512
+collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Controller/CollisionBump"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
@@ -380,5 +386,4 @@ max_length = 50
 unique_name_in_owner = true
 fov = 110.0
 
-[connection signal="area_entered" from="Controller/CollisionBump" to="." method="_on_collision_bump_area_entered"]
 [connection signal="text_submitted" from="UI/Control/ChatType" to="." method="_on_chat_type_text_submitted"]
