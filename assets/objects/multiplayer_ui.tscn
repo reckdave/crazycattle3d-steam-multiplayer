@@ -1,4 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://coe4ag08vn4vl"]
+[gd_scene load_steps=19 format=3 uid="uid://coe4ag08vn4vl"]
+
+[ext_resource type="Texture2D" uid="uid://dc4ra8b5u5aob" path="res://assets/textures/menu.png" id="1_twxod"]
+[ext_resource type="FontFile" uid="uid://b6jjdr4a7agoe" path="res://assets/IMPACT.TTF" id="2_nwlmj"]
+[ext_resource type="FontFile" uid="uid://c6552oe71veak" path="res://assets/ariblk.ttf" id="3_foo3h"]
 
 [sub_resource type="GDScript" id="GDScript_0yv2m"]
 resource_name = "multiplayerUI"
@@ -51,6 +55,37 @@ func _on_lobby_pressed() -> void:
 	$ServerList.show()
 	$ServerList._refresh_lobby()
 "
+
+[sub_resource type="GDScript" id="GDScript_foo3h"]
+resource_name = "menu"
+script/source = "extends Control
+
+func _on_play_pressed() -> void:
+	hide()
+	$\"../JoinOrHost\".show()
+"
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2bxgq"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_j7q8d"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_plsfq"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_oj5lp"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fknjr"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1s6bl"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5yvbj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_t7njc"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yga77"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_erdw6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1nniv"]
 
 [sub_resource type="GDScript" id="GDScript_twxod"]
 resource_name = "serverlist"
@@ -134,7 +169,64 @@ func _update_playerlist():
 [node name="MultiplayerUI" type="CanvasLayer"]
 script = SubResource("GDScript_0yv2m")
 
+[node name="MainMenu" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_foo3h")
+
+[node name="MenuTexture" type="TextureRect" parent="MainMenu"]
+layout_mode = 0
+offset_right = 640.0
+offset_bottom = 480.0
+texture = ExtResource("1_twxod")
+
+[node name="Title" type="RichTextLabel" parent="MainMenu"]
+layout_mode = 0
+offset_left = 37.0
+offset_top = 69.0
+offset_right = 411.0
+offset_bottom = 106.0
+scale = Vector2(1.6, 1)
+theme_override_colors/default_color = Color(1, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_fonts/normal_font = ExtResource("2_nwlmj")
+theme_override_font_sizes/normal_font_size = 23
+bbcode_enabled = true
+text = "[wave]Steam Multiplayer"
+fit_content = true
+
+[node name="Play" type="Button" parent="MainMenu"]
+layout_mode = 0
+offset_left = 195.0
+offset_top = 306.0
+offset_right = 306.0
+offset_bottom = 329.0
+scale = Vector2(2.28, 2.28)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_foo3h")
+theme_override_font_sizes/font_size = 12
+theme_override_styles/focus = SubResource("StyleBoxEmpty_2bxgq")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_j7q8d")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_plsfq")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_oj5lp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_fknjr")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_1s6bl")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_5yvbj")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_t7njc")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_yga77")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_erdw6")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_1nniv")
+text = "Start Multiplayer"
+
 [node name="JoinOrHost" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -244,18 +336,6 @@ popup/item_2/text = "PUBLIC"
 popup/item_2/id = 0
 popup/item_3/text = "INVISIBLE"
 popup/item_3/id = 3
-
-[node name="RichTextLabel" type="RichTextLabel" parent="JoinOrHost"]
-layout_mode = 0
-offset_left = 245.0
-offset_top = 31.0
-offset_right = 619.0
-offset_bottom = 68.0
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/normal_font_size = 23
-bbcode_enabled = true
-text = "[wave]CrazyCattle3D Steam Multiplayer"
-fit_content = true
 
 [node name="ServerList" type="Control" parent="."]
 visible = false
@@ -379,6 +459,7 @@ offset_bottom = 62.0
 grow_horizontal = 2
 text = "START (HOST ONLY)"
 
+[connection signal="pressed" from="MainMenu/Play" to="MainMenu" method="_on_play_pressed"]
 [connection signal="pressed" from="JoinOrHost/HOST" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="JoinOrHost/JOIN" to="." method="_on_join_pressed"]
 [connection signal="pressed" from="JoinOrHost/LOBBY" to="." method="_on_lobby_pressed"]

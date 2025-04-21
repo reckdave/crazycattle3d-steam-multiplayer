@@ -8,17 +8,18 @@
 [ext_resource type="AudioStream" uid="uid://q2q1tlh2uy0f" path="res://assets/audio/world1.wav" id="5_vc6ol"]
 [ext_resource type="Texture2D" uid="uid://q0oohjs03ejk" path="res://assets/textures/attachment.png" id="6_fjtbt"]
 
-[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qqnjc"]
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_fjtbt"]
 panorama = ExtResource("3_3dl86")
-energy_multiplier = 3.0
+energy_multiplier = 5.0
 
 [sub_resource type="Sky" id="Sky_q5k50"]
-sky_material = SubResource("PanoramaSkyMaterial_qqnjc")
+sky_material = SubResource("PanoramaSkyMaterial_fjtbt")
 
 [sub_resource type="Environment" id="Environment_3dl86"]
 background_mode = 2
 background_energy_multiplier = 0.65
 sky = SubResource("Sky_q5k50")
+sky_custom_fov = 76.0
 ambient_light_source = 3
 ambient_light_color = Color(1, 1, 1, 1)
 ambient_light_energy = 4.0
