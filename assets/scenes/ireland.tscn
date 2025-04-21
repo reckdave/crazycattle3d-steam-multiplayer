@@ -1,10 +1,12 @@
-[gd_scene load_steps=11 format=3 uid="uid://orapkll43iqf"]
+[gd_scene load_steps=13 format=3 uid="uid://orapkll43iqf"]
 
 [ext_resource type="Texture2D" uid="uid://g8gws3kl1rer" path="res://assets/textures/grass.png" id="1_q5k50"]
 [ext_resource type="PackedScene" uid="uid://b7ywy05yf52t4" path="res://assets/models/fence.tscn" id="2_qqnjc"]
 [ext_resource type="Texture2D" uid="uid://di21hsxbrc6wb" path="res://assets/textures/rollinghills.png" id="3_3dl86"]
 [ext_resource type="Texture2D" uid="uid://bd3yiomqoghfc" path="res://assets/textures/grass_tuft.png" id="3_vc6ol"]
+[ext_resource type="PackedScene" uid="uid://byg2ehxtrpwd6" path="res://assets/models/stonehouse.glb" id="5_2q7lo"]
 [ext_resource type="AudioStream" uid="uid://q2q1tlh2uy0f" path="res://assets/audio/world1.wav" id="5_vc6ol"]
+[ext_resource type="Texture2D" uid="uid://q0oohjs03ejk" path="res://assets/textures/attachment.png" id="6_fjtbt"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qqnjc"]
 panorama = ExtResource("3_3dl86")
@@ -194,6 +196,15 @@ visibility_range_end = 50.0
 pixel_size = 0.02
 billboard = 2
 texture = ExtResource("3_vc6ol")
+
+[node name="stonehouse" parent="Map" instance=ExtResource("5_2q7lo")]
+transform = Transform3D(8.66025, 0, 5, 0, 10, 0, -5, 0, 8.66025, -166.569, 9.5, -165.256)
+
+[node name="Attachment" type="Sprite3D" parent="Map/stonehouse"]
+transform = Transform3D(1, 0, 1.78814e-07, 0, 1, 0, -1.78814e-07, 0, 1, 0.719614, 0, -0.0464077)
+pixel_size = 0.001
+billboard = 1
+texture = ExtResource("6_fjtbt")
 
 [node name="DeathBarriar" type="Area3D" parent="Map"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
