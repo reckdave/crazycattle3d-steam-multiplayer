@@ -10,6 +10,10 @@ signal player_removed
 
 var ongoing_game : bool = false
 
+var game_data = {
+	"MAP": 0
+}
+
 func _ready() -> void:
 	player_removed.connect(_on_player_removed)
 	game_end.connect(_on_game_ended)

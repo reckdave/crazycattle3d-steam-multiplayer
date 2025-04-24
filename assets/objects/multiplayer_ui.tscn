@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://coe4ag08vn4vl"]
+[gd_scene load_steps=20 format=3 uid="uid://coe4ag08vn4vl"]
 
 [ext_resource type="Texture2D" uid="uid://dc4ra8b5u5aob" path="res://assets/textures/menu.png" id="1_twxod"]
 [ext_resource type="FontFile" uid="uid://b6jjdr4a7agoe" path="res://assets/IMPACT.TTF" id="2_nwlmj"]
@@ -49,13 +49,17 @@ func _on_name_text_editted(new_text: String) -> void:
 	Global.player_data.username = new_text
 
 # multiplayer calls
-func _restart_ui():
-	change_ui(0)
-
 func _on_lobby_pressed() -> void:
 	$JoinOrHost.hide()
 	$ServerList.show()
 	$ServerList._refresh_lobby()
+
+func _on_maxplayers_text_submitted(new_text: String) -> void:
+	MultiplayerHandler.max_players = clampi(int(new_text),2,99)
+	$JoinOrHost/MAXPLAYERS.text = str(MultiplayerHandler.max_players)
+
+func _restart_ui():
+	change_ui(0)
 "
 
 [sub_resource type="GDScript" id="GDScript_foo3h"]
@@ -173,10 +177,18 @@ func _update_playerlist():
 	#DiscordHandler._update_rpc(MultiplayerHandler.players.size())
 "
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_foo3h"]
+bg_color = Color(0.162065, 0.162066, 0.162065, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
 [node name="MultiplayerUI" type="CanvasLayer"]
 script = SubResource("GDScript_0yv2m")
 
 [node name="MainMenu" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -233,7 +245,6 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_1nniv")
 text = "Start Multiplayer"
 
 [node name="JoinOrHost" type="Control" parent="."]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -304,6 +315,23 @@ grow_horizontal = 0
 grow_vertical = 2
 placeholder_text = "LOBBY CODE"
 alignment = 1
+
+[node name="MAXPLAYERS" type="LineEdit" parent="JoinOrHost"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -234.0
+offset_top = -21.0
+offset_right = -92.0
+offset_bottom = 10.0
+grow_horizontal = 0
+grow_vertical = 2
+placeholder_text = "MAX PLAYERS"
+alignment = 1
+max_length = 3
 
 [node name="MultiType" type="OptionButton" parent="JoinOrHost"]
 layout_mode = 1
@@ -425,7 +453,15 @@ grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_nwlmj")
 
-[node name="ScrollPlayers" type="ScrollContainer" parent="Lobby"]
+[node name="MAIN" type="Control" parent="Lobby"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScrollPlayers" type="ScrollContainer" parent="Lobby/MAIN"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -439,11 +475,11 @@ offset_bottom = 166.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="List" type="VBoxContainer" parent="Lobby/ScrollPlayers"]
+[node name="List" type="VBoxContainer" parent="Lobby/MAIN/ScrollPlayers"]
 custom_minimum_size = Vector2(435, 20)
 layout_mode = 2
 
-[node name="DISCONNECT" type="Button" parent="Lobby"]
+[node name="DISCONNECT" type="Button" parent="Lobby/MAIN"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -455,7 +491,7 @@ offset_bottom = 62.0
 grow_horizontal = 2
 text = "Disconnect"
 
-[node name="START" type="Button" parent="Lobby"]
+[node name="START" type="Button" parent="Lobby/MAIN"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -467,7 +503,22 @@ offset_bottom = 62.0
 grow_horizontal = 2
 text = "START (HOST ONLY)"
 
-[node name="JOINING" type="RichTextLabel" parent="Lobby"]
+[node name="HOSTEXTRAS" type="Button" parent="Lobby/MAIN"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -51.0
+offset_right = -15.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "HOST EXTRAS"
+
+[node name="JOINING" type="RichTextLabel" parent="Lobby/MAIN"]
 visible = false
 layout_mode = 1
 anchors_preset = 7
@@ -485,13 +536,79 @@ text = "[wave]JOINING....."
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="HOST" type="Control" parent="Lobby"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Scroll" type="ScrollContainer" parent="Lobby/HOST"]
+custom_minimum_size = Vector2(380, 31)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 26.0
+offset_top = -185.0
+offset_right = 406.0
+offset_bottom = 185.0
+grow_vertical = 2
+vertical_scroll_mode = 0
+
+[node name="LIST" type="VBoxContainer" parent="Lobby/HOST/Scroll"]
+layout_mode = 2
+
+[node name="MAP" type="Control" parent="Lobby/HOST/Scroll/LIST"]
+custom_minimum_size = Vector2(380, 31)
+layout_mode = 2
+
+[node name="Title" type="RichTextLabel" parent="Lobby/HOST/Scroll/LIST/MAP"]
+layout_mode = 0
+offset_right = 190.0
+offset_bottom = 31.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_foo3h")
+text = "MAP:"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OptionButton" type="OptionButton" parent="Lobby/HOST/Scroll/LIST/MAP"]
+layout_mode = 0
+offset_left = 190.0
+offset_right = 380.0
+offset_bottom = 31.0
+selected = 0
+item_count = 2
+popup/item_0/text = "Ireland"
+popup/item_0/id = 0
+popup/item_1/text = "Egypt"
+popup/item_1/id = 1
+
+[node name="BACK" type="Button" parent="Lobby/HOST"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -77.0
+offset_top = -74.0
+offset_right = -27.0
+offset_bottom = -43.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "BACK"
+
 [connection signal="pressed" from="MainMenu/Play" to="MainMenu" method="_on_play_pressed"]
 [connection signal="pressed" from="JoinOrHost/HOST" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="JoinOrHost/JOIN" to="." method="_on_join_pressed"]
 [connection signal="pressed" from="JoinOrHost/LOBBY" to="." method="_on_lobby_pressed"]
 [connection signal="text_changed" from="JoinOrHost/name" to="." method="_on_name_text_editted"]
+[connection signal="text_submitted" from="JoinOrHost/MAXPLAYERS" to="." method="_on_maxplayers_text_submitted"]
 [connection signal="item_selected" from="JoinOrHost/MultiType" to="." method="_on_multi_type_item_selected"]
 [connection signal="pressed" from="ServerList/REFRESH" to="ServerList" method="_on_refresh_pressed"]
 [connection signal="pressed" from="ServerList/CLOSE" to="ServerList" method="_on_close_pressed"]
-[connection signal="pressed" from="Lobby/DISCONNECT" to="Lobby" method="_on_disconnect_pressed"]
-[connection signal="pressed" from="Lobby/START" to="Lobby" method="_on_start_pressed"]
+[connection signal="pressed" from="Lobby/MAIN/DISCONNECT" to="Lobby" method="_on_disconnect_pressed"]
+[connection signal="pressed" from="Lobby/MAIN/START" to="Lobby" method="_on_start_pressed"]
