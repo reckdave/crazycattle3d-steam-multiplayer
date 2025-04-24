@@ -1,0 +1,57 @@
+[gd_scene load_steps=3 format=3 uid="uid://dufyaukxq2pv8"]
+
+[ext_resource type="PackedScene" uid="uid://coe4ag08vn4vl" path="res://assets/objects/multiplayer_ui.tscn" id="1_cb66b"]
+
+[sub_resource type="GDScript" id="GDScript_cb66b"]
+resource_name = "game"
+script/source = "extends Node2D
+
+const version_url = \"https://raw.githubusercontent.com/reckdave/crazycattle3d-steam-multiplayer/refs/heads/main/version.json\"
+const version = \"1.1.1\"
+var version_release = \"https://github.com/reckdave/crazycattle3d-steam-multiplayer/releases/tag/v\"
+
+func _version_check():
+	$VersionCheck.request(version_url)
+
+func _on_version_check_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+	if response_code == 200:
+		var data = str_to_var(body.get_string_from_utf8())
+		print(data)
+		if version < data[\"VERSION\"]:
+			OS.alert(\"THERE IS A NEW VERSION AVAILABLE!\",\"HEY\")
+			OS.shell_open(version_release + data[\"VERSION\"])
+
+const discord_app = 1365025198646235268
+
+func _update_rpc(players):
+	DiscordRPC.app_id = discord_app
+	DiscordRPC.state = \"Playing\";
+	DiscordRPC.details = \"Knocking over sheep.\";
+	DiscordRPC.start_timestamp = int(Time.get_unix_time_from_system());
+	#DiscordRPC.end_timestamp = 1507665886;
+	DiscordRPC.large_image = \"crazy_icon\";
+	DiscordRPC.large_image_text = \"Cattle\";
+	DiscordRPC.small_image = \"icon_svg\";
+	DiscordRPC.small_image_text = \"Made in Godot\";
+	#DiscordRPC.party_id = \"ae488379-351d-4a4f-ad32-2b9b01c91657\";
+	DiscordRPC.current_party_size = players;
+	DiscordRPC.max_party_size = 32;
+	#DiscordRPC.join_secret = \"MTI4NzM0OjFpMmhuZToxMjMxMjM= \";
+	
+	DiscordRPC.refresh()
+
+func _ready() -> void:
+	_version_check()
+	_update_rpc(1)
+"
+
+[node name="GAME" type="Node2D"]
+script = SubResource("GDScript_cb66b")
+
+[node name="VersionCheck" type="HTTPRequest" parent="."]
+
+[node name="MultiplayerUI" parent="." instance=ExtResource("1_cb66b")]
+
+[node name="PlayerSpawns" type="Node3D" parent="."]
+
+[connection signal="request_completed" from="VersionCheck" to="." method="_on_version_check_request_completed"]

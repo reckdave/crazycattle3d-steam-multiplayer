@@ -22,6 +22,7 @@ Global="*res://assets/scripts/Global.gd"
 SteamHandler="*res://assets/scripts/SteamHandler.gd"
 MultiplayerHandler="*res://assets/scripts/MultiplayerHandler.gd"
 GameHandler="*res://assets/scripts/GameHandler.gd"
+DiscordRPCLoader="*res://addons/discord-rpc-gd/nodes/discord_autoload.gd"
 
 [debug]
 
@@ -34,6 +35,10 @@ window/size/viewport_height=480
 window/stretch/mode="viewport"
 window/stretch/aspect="ignore"
 mouse_cursor/custom_image="uid://dde5f537aerd"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/discord-rpc-gd/plugin.cfg")
 
 [input]
 

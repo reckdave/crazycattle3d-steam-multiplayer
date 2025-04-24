@@ -10,6 +10,7 @@ var max_players : int = 32
 
 signal updated_player_list
 signal failed_to_connect
+signal joined_lobby
 
 func _ready() -> void:
 	multiplayer.peer_connected.connect(_peer_connected)
@@ -80,6 +81,7 @@ func _peer_disconnected(pid):
 func _connected_to_server():
 	#print("%s has joined: %s" % [multiplayer.get_unique_id(),multiplayer.get_remote_sender_id()])
 	sendplayerdata.rpc_id(1,Global.player_data,multiplayer.get_unique_id())
+	joined_lobby.emit()
 func _connection_failed():
 	failed_to_connect.emit()
 

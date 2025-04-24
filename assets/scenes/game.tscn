@@ -10,7 +10,6 @@ const version_url = \"https://raw.githubusercontent.com/reckdave/crazycattle3d-s
 const version = \"1.1.1\"
 var version_release = \"https://github.com/reckdave/crazycattle3d-steam-multiplayer/releases/tag/v\"
 
-
 func _version_check():
 	$VersionCheck.request(version_url)
 
