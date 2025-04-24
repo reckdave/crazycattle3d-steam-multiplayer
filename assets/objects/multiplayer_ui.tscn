@@ -177,7 +177,6 @@ func _update_playerlist():
 script = SubResource("GDScript_0yv2m")
 
 [node name="MainMenu" type="Control" parent="."]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -417,6 +416,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Lobby" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
