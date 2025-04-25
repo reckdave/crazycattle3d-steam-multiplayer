@@ -10,6 +10,25 @@ const version_url = \"https://raw.githubusercontent.com/reckdave/crazycattle3d-s
 const version = \"1.1.2\"
 var version_release = \"https://github.com/reckdave/crazycattle3d-steam-multiplayer/releases/tag/v\"
 
+const discord_app = 1365025198646235268
+
+func _update_rpc():
+	DiscordRPC.app_id = discord_app
+	DiscordRPC.state = \"Playing\";
+	DiscordRPC.details = \"Knocking over sheep.\";
+	#DiscordRPC.start_timestamp = int(Time.get_unix_time_from_system());
+	#DiscordRPC.end_timestamp = 1507665886;
+	DiscordRPC.large_image = \"crazy_icon\";
+	DiscordRPC.large_image_text = \"Cattle\";
+	DiscordRPC.small_image = \"icon_svg\";
+	DiscordRPC.small_image_text = \"Made in Godot\";
+	#DiscordRPC.party_id = \"ae488379-351d-4a4f-ad32-2b9b01c91657\";
+	#DiscordRPC.current_party_size = 1;
+	#DiscordRPC.max_party_size = 32;
+	#DiscordRPC.join_secret = \"MTI4NzM0OjFpMmhuZToxMjMxMjM= \";
+	
+	DiscordRPC.refresh()
+
 func _version_check():
 	$VersionCheck.request(version_url)
 
@@ -23,6 +42,7 @@ func _on_version_check_request_completed(_result: int, response_code: int, _head
 
 func _ready() -> void:
 	_version_check()
+	_update_rpc()
 "
 
 [node name="GAME" type="Node2D"]

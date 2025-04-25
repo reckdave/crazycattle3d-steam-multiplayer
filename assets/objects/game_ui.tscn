@@ -73,6 +73,10 @@ func _on_play_pressed() -> void:
 func _on_settings_pressed() -> void:
 	hide()
 	$\"../Settings\".show()
+
+func _on_back_pressed() -> void:
+	$\"../JoinOrHost\".hide()
+	show()
 "
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2bxgq"]
@@ -218,6 +222,11 @@ func _update_playerlist():
 		var playerbutton : Button = Button.new()
 		playerbutton.name = str(MultiplayerHandler.players[player][\"pid\"])
 		playerbutton.text = MultiplayerHandler.players[player][\"username\"]
+		playerbutton.connect(\"pressed\",func():
+			if !(multiplayer.is_server()): return
+			print(\"kicking.. %s\" % playerbutton.text)
+			kick_pid.rpc_id(player)
+		)
 		$MAIN/ScrollPlayers/List.add_child(playerbutton)
 	#DiscordHandler._update_rpc(MultiplayerHandler.players.size())
 
@@ -229,6 +238,13 @@ func _on_hostextras_pressed() -> void:
 	if !(multiplayer.is_server()): return
 	$HOST.show()
 	$MAIN.hide()
+
+@rpc(\"authority\",\"call_remote\",\"reliable\")
+func kick_pid():
+	if (multiplayer.get_remote_sender_id() != 1): return
+	multiplayer.multiplayer_peer.disconnect_peer(1)
+	hide()
+	$\"../JoinOrHost\".show()
 "
 
 [sub_resource type="GDScript" id="GDScript_2bxgq"]
@@ -460,6 +476,14 @@ offset_bottom = -69.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "LOBBYS"
+
+[node name="BACK" type="Button" parent="JoinOrHost"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 10.0
+offset_right = 64.0
+offset_bottom = 41.0
+text = "BACK"
 
 [node name="name" type="LineEdit" parent="JoinOrHost"]
 layout_mode = 1
@@ -825,6 +849,7 @@ vertical_alignment = 1
 [connection signal="pressed" from="JoinOrHost/HOST" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="JoinOrHost/JOIN" to="." method="_on_join_pressed"]
 [connection signal="pressed" from="JoinOrHost/LOBBY" to="." method="_on_lobby_pressed"]
+[connection signal="pressed" from="JoinOrHost/BACK" to="MainMenu" method="_on_back_pressed"]
 [connection signal="text_changed" from="JoinOrHost/name" to="." method="_on_name_text_editted"]
 [connection signal="text_submitted" from="JoinOrHost/MAXPLAYERS" to="." method="_on_maxplayers_text_submitted"]
 [connection signal="item_selected" from="JoinOrHost/MultiType" to="." method="_on_multi_type_item_selected"]

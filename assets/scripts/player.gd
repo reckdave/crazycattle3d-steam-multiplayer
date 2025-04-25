@@ -28,6 +28,7 @@ var infreecam : bool = false:
 			%FreeCam.global_position = $Controller.global_position + Vector3(0,5,0)
 			%player_display.reparent(%FreeCam,false)
 		else:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 			%player_display.reparent($Controller,false)
 		infreecam = val
 var username : String = "steamuser99":
@@ -43,11 +44,11 @@ func _ready() -> void:
 	%player_display.text = MultiplayerHandler.players[int(name)]["username"]
 	multiplayer.peer_disconnected.connect(_on_player_leave)
 	
-	
 	if !(is_multiplayer_authority()):$UI.hide(); $SettingsMenu.hide(); return
 	$Controller/Camera.current = true
 	%player_display.hide()
 	global_position = Vector3(randi_range(-80,80),1,randi_range(-80,80))
+
 func _unhandled_input(event: InputEvent) -> void:
 	if !(is_multiplayer_authority()): return
 	if (infreecam) and event is InputEventMouseMotion:
@@ -58,9 +59,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if not (is_multiplayer_authority()): set_physics_process(false); return
 	if Input.is_action_just_pressed("debug_die"): die.rpc()
-	#if Input.is_action_just_pressed("debug_respawn"): respawn.rpc()
 	if !(dead):
-		#if !(has_node("Controller")): return
 		$Controller.steering = lerp($Controller.steering, Input.get_axis("left", "right") * 0.4, 5 * delta)
 		$Controller.engine_force = Input.get_axis("back", "forward") * sheep_speed
 		
@@ -71,7 +70,6 @@ func _physics_process(delta: float) -> void:
 			setcardata.rpc($Controller.global_position,$Controller.global_rotation)
 		
 		if Input.is_action_just_pressed("space"):
-			#$Controller.linear_velocity = Vector3(0,20,0)
 			baa_sound.rpc()
 	elif (infreecam) and (dead):
 		var input_dir = Input.get_vector("left","right","forward","back")
@@ -85,16 +83,15 @@ func _physics_process(delta: float) -> void:
 		setfreecamdata.rpc(%FreeCam.global_position)
 
 var can_try : bool = false
+var try_time : float = 1.0
 var can_impulse : bool = true
-var try_time : float = 1
 
 func _process(delta: float) -> void:
 	$UI/Control/Remaining.text = "%s left alive." % str(GameHandler.alive_players.size())
 	#if (Input.is_action_just_pressed("ui_down")): GameHandler.world_node.get_node("Map/DeathBarriar").queue_free()
-	if !(multiplayer.is_server()):
-		return
+	if !(multiplayer.is_server()): return
 	else:
-		try_time -= delta;
+		try_time -= delta
 	if !(can_try): 
 		if (try_time <= 0): can_try = true
 		return
@@ -127,7 +124,7 @@ func _process(delta: float) -> void:
 func apply_push(pid,force):
 	if (multiplayer.get_remote_sender_id() != 1): return
 	var plr = GameHandler.get_player(pid)
-	plr.get_node("Controller").apply_impulse(force * 0.75)
+	plr.get_node("Controller").apply_impulse(force * 1.1)
 
 @rpc("authority","call_remote","unreliable",0)
 func setcardata(newpos,newrot):
@@ -149,16 +146,6 @@ func baa_sound():
 	if !(has_node("Controller")): return
 	$Controller/SFX/Baa.play()
 
-#@rpc("authority","call_local","reliable",0)
-#func userdata(Pusername,Pdead,Pinfreecam):
-#	username = Pusername
-#	dead = Pdead
-#	infreecam = Pinfreecam
-#	
-#	$Controller/theghoul.hide()
-#	if (username == "") or (username == "steamuser99"):
-#		$Controller/theghoul.show()
-
 @rpc("any_peer","call_local","reliable",0)
 func die():
 	if (multiplayer.get_remote_sender_id() != 1): return
@@ -178,34 +165,10 @@ func die():
 		GameHandler.alive_players.erase(int(name))
 		GameHandler.player_removed.emit(int(name))
 
-#@rpc("authority","call_local","reliable",0)
-#func respawn():
-#	if (dead):
-#		print("revive %s" % username)
-#		
-#		$Controller.global_rotation = Vector3(0,0,0)
-#		$Controller.global_position = Vector3(0,2,0)
-#		$Controller/VFX/Explosion.play("NONE")
-#		
-#		sheep_speed = 100.0
-#		dead = false
-#		infreecam = false
-		
-		#setcardata.rpc($Controller.global_position,$Controller.global_rotation)
-
 # multiplayer connects
 func _on_player_leave(pid):
 	if pid == int(name):
 		if GameHandler.alive_players.has(pid): GameHandler.alive_players.erase(pid); GameHandler.player_removed.emit(int(name))
 		queue_free()
 
-
-#func _on_collision_bump_area_entered(area: Area3D) -> void:
-	#print(area.get_parent().name)
-	#if !(multiplayer.is_server()): return
-	#push_collide.rpc(area.get_parent())
-
 # MISC
-func _on_chat_type_text_submitted(new_text: String) -> void:
-	#send_message.rpc(new_text)
-	pass

@@ -7,6 +7,10 @@ script/source = "extends CanvasLayer
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(\"esc\"):
 		$UI.visible = !$UI.visible
+		if $UI.visible:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		else:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _on_disconnect_pressed() -> void:
 	MultiplayerHandler._client_disconnect()
