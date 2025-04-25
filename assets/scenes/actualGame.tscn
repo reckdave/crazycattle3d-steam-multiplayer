@@ -1,0 +1,489 @@
+[gd_scene load_steps=29 format=3 uid="uid://orapkll43iqf"]
+
+[ext_resource type="Texture2D" uid="uid://di21hsxbrc6wb" path="res://assets/textures/ireland/rollinghills.png" id="1_sj4f2"]
+[ext_resource type="Texture2D" uid="uid://g8gws3kl1rer" path="res://assets/textures/ireland/grass.png" id="2_7b546"]
+[ext_resource type="PackedScene" uid="uid://b7ywy05yf52t4" path="res://assets/models/fence.tscn" id="3_ttoyh"]
+[ext_resource type="Texture2D" uid="uid://byxb2u7xwok7x" path="res://assets/textures/egypt/skybox.png" id="4_7b546"]
+[ext_resource type="Texture2D" uid="uid://bd3yiomqoghfc" path="res://assets/textures/ireland/grass_tuft.png" id="4_13k1e"]
+[ext_resource type="PackedScene" uid="uid://c1ff7fjq68vw1" path="res://assets/models/pyramid.glb" id="4_metbn"]
+[ext_resource type="Texture2D" uid="uid://cdovwkedvp0um" path="res://assets/textures/thegouls.jpg" id="5_76agw"]
+[ext_resource type="PackedScene" uid="uid://byg2ehxtrpwd6" path="res://assets/models/stonehouse.glb" id="5_metbn"]
+[ext_resource type="Texture2D" uid="uid://q0oohjs03ejk" path="res://assets/textures/attachment.png" id="6_76agw"]
+[ext_resource type="Texture2D" uid="uid://bsdrsax6spj6q" path="res://assets/textures/egypt/redsand.png" id="6_ttoyh"]
+[ext_resource type="AudioStream" uid="uid://q2q1tlh2uy0f" path="res://assets/audio/world1.wav" id="7_w5nvx"]
+
+[sub_resource type="GDScript" id="GDScript_metbn"]
+resource_name = "game_map"
+script/source = "extends Node3D
+
+func _change_map(chosen):
+	match (chosen):
+		0: # IRELAND
+			$Change.play(\"Ireland\")
+		1: # EGYPT
+			$Change.play(\"Egypt\")
+"
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_ttoyh"]
+panorama = ExtResource("1_sj4f2")
+energy_multiplier = 5.0
+
+[sub_resource type="Sky" id="Sky_13k1e"]
+sky_material = SubResource("PanoramaSkyMaterial_ttoyh")
+
+[sub_resource type="Environment" id="Environment_metbn"]
+background_mode = 2
+background_energy_multiplier = 0.65
+sky = SubResource("Sky_13k1e")
+sky_custom_fov = 76.0
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 4.0
+ssao_enabled = true
+ssao_radius = 1.75
+ssao_intensity = 15.0
+sdfgi_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ttoyh"]
+albedo_texture = ExtResource("2_7b546")
+uv1_scale = Vector3(0.05, 0.05, 0.05)
+uv1_triplanar = true
+
+[sub_resource type="Animation" id="Animation_sj4f2"]
+resource_name = "Ireland"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Ireland:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:environment")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("Environment_metbn")]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../Floor:material")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("StandardMaterial3D_ttoyh")]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../Egypt:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_fjtbt"]
+panorama = ExtResource("4_7b546")
+energy_multiplier = 5.0
+
+[sub_resource type="Sky" id="Sky_q5k50"]
+sky_material = SubResource("PanoramaSkyMaterial_fjtbt")
+
+[sub_resource type="Environment" id="Environment_sj4f2"]
+background_mode = 2
+background_energy_multiplier = 0.65
+sky = SubResource("Sky_q5k50")
+sky_custom_fov = 76.0
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 4.0
+ssao_radius = 1.75
+ssao_intensity = 15.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3dl86"]
+albedo_texture = ExtResource("2_7b546")
+uv1_scale = Vector3(0.05, 0.05, 0.05)
+uv1_triplanar = true
+
+[sub_resource type="Animation" id="Animation_7b546"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Ireland:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../Egypt:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:environment")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("Environment_sj4f2")]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../Floor:material")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("StandardMaterial3D_3dl86")]
+}
+
+[sub_resource type="Environment" id="Environment_ttoyh"]
+background_mode = 2
+background_energy_multiplier = 0.65
+sky = SubResource("Sky_q5k50")
+sky_custom_fov = 76.0
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 4.0
+ssao_radius = 1.75
+ssao_intensity = 15.0
+fog_enabled = true
+fog_light_color = Color(1, 0.454902, 0.211765, 1)
+fog_light_energy = 1.3
+fog_sky_affect = 0.182
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metbn"]
+albedo_texture = ExtResource("6_ttoyh")
+uv1_scale = Vector3(0.05, 0.05, 0.05)
+uv1_triplanar = true
+
+[sub_resource type="Animation" id="Animation_ttoyh"]
+resource_name = "Egypt"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Egypt:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:environment")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("Environment_ttoyh")]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../Floor:material")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("StandardMaterial3D_metbn")]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../Ireland:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ttoyh"]
+_data = {
+&"Egypt": SubResource("Animation_ttoyh"),
+&"Ireland": SubResource("Animation_sj4f2"),
+&"RESET": SubResource("Animation_7b546")
+}
+
+[sub_resource type="GDScript" id="GDScript_76agw"]
+resource_name = "settings_env"
+script/source = "extends WorldEnvironment
+
+func _ready() -> void:
+	match (Settings.data[\"GRAPHICS\"]):
+		0: # OG
+			pass
+		1: # MULTIPLAYER
+			environment.ssao_enabled = false
+			environment.sdfgi_enabled = false
+			$\"../SUN\".visible = true
+"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vc6ol"]
+size = Vector3(260, 8, 260)
+
+[node name="GameMAP" type="Node3D"]
+script = SubResource("GDScript_metbn")
+
+[node name="Change" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Map/ENV")
+libraries = {
+&"": SubResource("AnimationLibrary_ttoyh")
+}
+
+[node name="Map" type="Node3D" parent="."]
+
+[node name="Ireland" type="Node3D" parent="Map"]
+
+[node name="Grass" type="Node3D" parent="Map/Ireland"]
+
+[node name="SPRITE" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.142172, 0)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE2" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.952, 0.142172, -24.2469)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE3" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.4714, 0.142172, -10.7419)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE4" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 86.0048, 0.142172, -10.7419)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE5" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.264, 0.142172, -29.8824)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE6" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.264, 0.142172, 18.0044)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE7" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 78.6252, 0.142172, 51.0144)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE8" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 78.6252, 0.142172, 30.6567)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE9" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.4181, 0.142172, 30.6567)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE10" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.4181, 0.142172, 75.5517)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE11" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45.843, 0.142172, 63.4121)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE12" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.9947, 0.142172, 63.4121)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE13" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.9947, 0.142172, 20.694)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE14" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.0279, 0.142172, 20.694)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE15" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -51.0003, 0.142172, 51.7966)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE16" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -51.0003, 0.142172, -18.816)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE17" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.1903, 0.142172, -26.1642)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE18" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34.8175, 0.142172, -60.1642)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE19" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -59.7443, 0.142172, -65.5681)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="SPRITE20" type="Sprite3D" parent="Map/Ireland/Grass"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -64.3293, 0.142172, -46.8421)
+visibility_range_end = 50.0
+pixel_size = 0.02
+billboard = 2
+texture = ExtResource("4_13k1e")
+
+[node name="stonehouse" parent="Map/Ireland" instance=ExtResource("5_metbn")]
+transform = Transform3D(8.66025, 0, 5, 0, 10, 0, -5, 0, 8.66025, -166.569, 9.5, -165.256)
+
+[node name="Attachment" type="Sprite3D" parent="Map/Ireland/stonehouse"]
+transform = Transform3D(1, 0, 1.78814e-07, 0, 1, 0, -1.78814e-07, 0, 1, 0.719614, 0, -0.0464077)
+pixel_size = 0.001
+billboard = 1
+texture = ExtResource("6_76agw")
+
+[node name="Egypt" type="Node3D" parent="Map"]
+visible = false
+
+[node name="pyramid" parent="Map/Egypt" instance=ExtResource("4_metbn")]
+transform = Transform3D(12.6732, 0, 2.8965, 0, 13, 0, -2.8965, 0, 12.6732, -7.5709, -0.466469, -287.484)
+
+[node name="Sprite3D" type="Sprite3D" parent="Map/Egypt/pyramid"]
+transform = Transform3D(1, 0, 2.98023e-08, 0, 1, 0, -2.98023e-08, 0, 1, 0, 1.69231, 0)
+pixel_size = 0.006
+billboard = 1
+texture = ExtResource("5_76agw")
+
+[node name="pyramid2" parent="Map/Egypt" instance=ExtResource("4_metbn")]
+transform = Transform3D(11.2391, 0, -6.53318, 0, 13, 0, 6.53318, 0, 11.2391, -188.032, 0, -120.856)
+
+[node name="attachment" type="Sprite3D" parent="Map/Egypt/pyramid2"]
+transform = Transform3D(1, 0, -5.96046e-08, 0, 1, 0, 5.96046e-08, 0, 1, 0, 1.46154, 0)
+pixel_size = 0.003
+billboard = 1
+texture = ExtResource("6_76agw")
+
+[node name="ENV" type="WorldEnvironment" parent="Map"]
+environment = SubResource("Environment_sj4f2")
+script = SubResource("GDScript_76agw")
+
+[node name="SUN" type="DirectionalLight3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, -0.5, 0.866026, 0, -0.866026, -0.5, 0, 10.2035, 0)
+visible = false
+light_energy = 1.3
+shadow_enabled = true
+
+[node name="Fence" parent="Map" instance=ExtResource("3_ttoyh")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 3, 0)
+
+[node name="Floor" type="CSGBox3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+use_collision = true
+collision_layer = 3
+size = Vector3(600, 1, 600)
+material = SubResource("StandardMaterial3D_3dl86")
+
+[node name="DeathBarriar" type="Area3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+collision_layer = 16
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/DeathBarriar"]
+shape = SubResource("BoxShape3D_vc6ol")
+debug_color = Color(0.913725, 0.164706, 0.592157, 0.380392)
+
+[node name="MUSIC" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_w5nvx")
+volume_db = -10.0
+autoplay = true

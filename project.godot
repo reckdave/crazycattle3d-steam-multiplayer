@@ -19,6 +19,7 @@ config/windows_native_icon="res://crazyicon.ico"
 [autoload]
 
 Global="*res://assets/scripts/Global.gd"
+Settings="*res://assets/scripts/Settings.gd"
 SteamHandler="*res://assets/scripts/SteamHandler.gd"
 MultiplayerHandler="*res://assets/scripts/MultiplayerHandler.gd"
 GameHandler="*res://assets/scripts/GameHandler.gd"
@@ -39,6 +40,21 @@ mouse_cursor/custom_image="uid://dde5f537aerd"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/discord-rpc-gd/plugin.cfg")
+
+[file_customization]
+
+folder_colors={
+"res://addons/": "gray",
+"res://assets/": "gray",
+"res://assets/audio/": "red",
+"res://assets/models/": "orange",
+"res://assets/objects/": "yellow",
+"res://assets/scenes/": "green",
+"res://assets/scripts/": "blue",
+"res://assets/textures/": "purple",
+"res://assets/textures/egypt/": "orange",
+"res://assets/textures/ireland/": "green"
+}
 
 [input]
 

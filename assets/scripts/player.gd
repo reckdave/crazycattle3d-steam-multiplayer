@@ -24,6 +24,7 @@ var infreecam : bool = false:
 			$Controller/Camera.current = !val
 			$FreeCam.current = val
 		if val:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 			%FreeCam.global_position = $Controller.global_position + Vector3(0,5,0)
 			%player_display.reparent(%FreeCam,false)
 		else:

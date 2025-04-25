@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://cckjrg5mx6cqp"]
+[gd_scene load_steps=31 format=3 uid="uid://cckjrg5mx6cqp"]
 
 [ext_resource type="PackedScene" uid="uid://kpnlifa2cxf7" path="res://assets/objects/settings_ui.tscn" id="1_6r1sy"]
 [ext_resource type="Script" uid="uid://rot254kw74qr" path="res://assets/scripts/player.gd" id="1_bkysh"]
@@ -154,6 +154,18 @@ animations = [{
 [sub_resource type="BoxShape3D" id="BoxShape3D_bkysh"]
 size = Vector3(1, 2, 3)
 
+[sub_resource type="GDScript" id="GDScript_bkysh"]
+resource_name = "player_ui"
+script/source = "extends CanvasLayer
+
+func _ready() -> void:
+	GameHandler.player_removed.connect(_on_player_died)
+
+func _on_player_died(pid : int):
+	$Control/Feed.show()
+	$Control/Feed.text = \"[shake]%s has died.\" % MultiplayerHandler.players[pid].username
+"
+
 [node name="Player" type="Node3D"]
 script = ExtResource("1_bkysh")
 
@@ -295,6 +307,7 @@ shape = SubResource("BoxShape3D_bkysh")
 [node name="SettingsMenu" parent="." instance=ExtResource("1_6r1sy")]
 
 [node name="UI" type="CanvasLayer" parent="."]
+script = SubResource("GDScript_bkysh")
 
 [node name="Control" type="Control" parent="UI"]
 layout_mode = 3
@@ -329,6 +342,23 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_fonts/normal_font = ExtResource("6_nqkij")
 theme_override_font_sizes/normal_font_size = 12
 text = "Join the Discord"
+
+[node name="Feed" type="RichTextLabel" parent="UI/Control"]
+visible = false
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -177.0
+offset_right = 213.0
+offset_bottom = -137.0
+grow_vertical = 2
+scale = Vector2(4, 1.6)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_fonts/normal_font = ExtResource("6_nqkij")
+theme_override_font_sizes/normal_font_size = 12
+bbcode_enabled = true
+text = "steamuser99 has died."
 
 [node name="Remaining" type="RichTextLabel" parent="UI/Control"]
 layout_mode = 1

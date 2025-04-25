@@ -1,6 +1,7 @@
 extends Node
 
 @onready var sheep_scene : PackedScene = preload("res://assets/objects/player.tscn")
+@onready var world_map : PackedScene = preload("res://assets/scenes/actualGame.tscn")
 var alive_players : Array = []
 var world_node : Node3D
 
@@ -24,14 +25,15 @@ func get_player(pid):
 		return world_node.get_node(str(pid))
 
 @rpc("authority","call_local","reliable")
-func start_game(world : PackedScene = load("res://assets/scenes/ireland.tscn")):
+func start_game(host_game_data):
 	if (multiplayer.get_remote_sender_id() != 1): return
 	if (MultiplayerHandler.players.size() <= 1): OS.alert("NOT ENOUGH PLAYERS..","HEY"); return
 	
 	Steam.setLobbyJoinable(MultiplayerHandler.lobby_id,false)
 	multiplayer.multiplayer_peer.refuse_new_connections = true
 	
-	world_node = world.instantiate()
+	world_node = world_map.instantiate()
+	world_node._change_map(host_game_data["MAP"])
 	get_tree().root.add_child(world_node)
 	
 	ongoing_game = true

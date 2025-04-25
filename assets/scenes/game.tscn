@@ -1,13 +1,13 @@
 [gd_scene load_steps=3 format=3 uid="uid://dufyaukxq2pv8"]
 
-[ext_resource type="PackedScene" uid="uid://coe4ag08vn4vl" path="res://assets/objects/multiplayer_ui.tscn" id="1_cb66b"]
+[ext_resource type="PackedScene" uid="uid://coe4ag08vn4vl" path="res://assets/objects/game_ui.tscn" id="1_cb66b"]
 
 [sub_resource type="GDScript" id="GDScript_cb66b"]
 resource_name = "game"
 script/source = "extends Node2D
 
 const version_url = \"https://raw.githubusercontent.com/reckdave/crazycattle3d-steam-multiplayer/refs/heads/main/version.json\"
-const version = \"1.1.1\"
+const version = \"1.1.2\"
 var version_release = \"https://github.com/reckdave/crazycattle3d-steam-multiplayer/releases/tag/v\"
 
 func _version_check():
@@ -30,8 +30,6 @@ script = SubResource("GDScript_cb66b")
 
 [node name="VersionCheck" type="HTTPRequest" parent="."]
 
-[node name="MultiplayerUI" parent="." instance=ExtResource("1_cb66b")]
-
-[node name="PlayerSpawns" type="Node3D" parent="."]
+[node name="GameUI" parent="." instance=ExtResource("1_cb66b")]
 
 [connection signal="request_completed" from="VersionCheck" to="." method="_on_version_check_request_completed"]
