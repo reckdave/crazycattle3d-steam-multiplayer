@@ -17,9 +17,12 @@ func _ready() -> void:
 	$Network.play()
 	network_playback = $Network.get_stream_playback()
 	
-	Steam.startVoiceRecording()
+	if (is_multiplayer_authority()):
+		#$Local.volume_db = -9999
+		Steam.startVoiceRecording()
 
 func _process(_delta: float) -> void:
+	if !(is_multiplayer_authority()): return
 	check_for_voice()
 
 func check_for_voice() -> void:
@@ -46,7 +49,7 @@ func get_sample_rate() -> void:
 	current_sample_rate = Steam.getVoiceOptimalSampleRate()
 	print("Current sample rate: %s" % current_sample_rate)
 
-@rpc("any_peer","call_local","reliable")
+@rpc("any_peer","call_local","unreliable")
 func process_voice_data(voice_data: Dictionary, voice_source: String) -> void:
 	# Our sample rate function above without toggling
 	get_sample_rate()

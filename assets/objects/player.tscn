@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://cckjrg5mx6cqp"]
+[gd_scene load_steps=32 format=3 uid="uid://cckjrg5mx6cqp"]
 
 [ext_resource type="PackedScene" uid="uid://kpnlifa2cxf7" path="res://assets/objects/settings_ui.tscn" id="1_6r1sy"]
 [ext_resource type="Script" uid="uid://rot254kw74qr" path="res://assets/scripts/player.gd" id="1_bkysh"]
@@ -9,6 +9,7 @@
 [ext_resource type="AudioStream" uid="uid://jccsstg3m8ue" path="res://assets/audio/explode.wav" id="3_jssbp"]
 [ext_resource type="AudioStream" uid="uid://dhgigyh074s3d" path="res://assets/audio/baa.wav" id="5_fh75e"]
 [ext_resource type="FontFile" uid="uid://b6jjdr4a7agoe" path="res://assets/IMPACT.TTF" id="6_nqkij"]
+[ext_resource type="PackedScene" uid="uid://b1l62tm01jay0" path="res://assets/objects/voice_chat.tscn" id="8_lvyht"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_6r1sy"]
 size = Vector3(1, 0.423, 1.718)
@@ -303,6 +304,8 @@ collision_mask = 0
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Controller/CollisionBump"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("BoxShape3D_bkysh")
+
+[node name="VoiceChat" parent="Controller" instance=ExtResource("8_lvyht")]
 
 [node name="SettingsMenu" parent="." instance=ExtResource("1_6r1sy")]
 

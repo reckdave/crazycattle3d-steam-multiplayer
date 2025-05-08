@@ -24,6 +24,84 @@ func _change_map(chosen):
 			$Change.play(\"Egypt\")
 "
 
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_fjtbt"]
+panorama = ExtResource("4_7b546")
+energy_multiplier = 5.0
+
+[sub_resource type="Sky" id="Sky_q5k50"]
+sky_material = SubResource("PanoramaSkyMaterial_fjtbt")
+
+[sub_resource type="Environment" id="Environment_ttoyh"]
+background_mode = 2
+background_energy_multiplier = 0.65
+sky = SubResource("Sky_q5k50")
+sky_custom_fov = 76.0
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 4.0
+ssao_radius = 1.75
+ssao_intensity = 15.0
+fog_enabled = true
+fog_light_color = Color(1, 0.454902, 0.211765, 1)
+fog_light_energy = 1.3
+fog_sky_affect = 0.182
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metbn"]
+albedo_texture = ExtResource("6_ttoyh")
+uv1_scale = Vector3(0.05, 0.05, 0.05)
+uv1_triplanar = true
+
+[sub_resource type="Animation" id="Animation_ttoyh"]
+resource_name = "Egypt"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Egypt:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:environment")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("Environment_ttoyh")]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../Floor:material")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("StandardMaterial3D_metbn")]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../Ireland:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_ttoyh"]
 panorama = ExtResource("1_sj4f2")
 energy_multiplier = 5.0
@@ -100,13 +178,6 @@ tracks/3/keys = {
 "values": [false]
 }
 
-[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_fjtbt"]
-panorama = ExtResource("4_7b546")
-energy_multiplier = 5.0
-
-[sub_resource type="Sky" id="Sky_q5k50"]
-sky_material = SubResource("PanoramaSkyMaterial_fjtbt")
-
 [sub_resource type="Environment" id="Environment_sj4f2"]
 background_mode = 2
 background_energy_multiplier = 0.65
@@ -174,77 +245,6 @@ tracks/3/keys = {
 "values": [SubResource("StandardMaterial3D_3dl86")]
 }
 
-[sub_resource type="Environment" id="Environment_ttoyh"]
-background_mode = 2
-background_energy_multiplier = 0.65
-sky = SubResource("Sky_q5k50")
-sky_custom_fov = 76.0
-ambient_light_source = 3
-ambient_light_color = Color(1, 1, 1, 1)
-ambient_light_energy = 4.0
-ssao_radius = 1.75
-ssao_intensity = 15.0
-fog_enabled = true
-fog_light_color = Color(1, 0.454902, 0.211765, 1)
-fog_light_energy = 1.3
-fog_sky_affect = 0.182
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metbn"]
-albedo_texture = ExtResource("6_ttoyh")
-uv1_scale = Vector3(0.05, 0.05, 0.05)
-uv1_triplanar = true
-
-[sub_resource type="Animation" id="Animation_ttoyh"]
-resource_name = "Egypt"
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("../Egypt:visible")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [true]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath(".:environment")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [SubResource("Environment_ttoyh")]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("../Floor:material")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [SubResource("StandardMaterial3D_metbn")]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("../Ireland:visible")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [false]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ttoyh"]
 _data = {
 &"Egypt": SubResource("Animation_ttoyh"),
@@ -277,6 +277,7 @@ root_node = NodePath("../Map/ENV")
 libraries = {
 &"": SubResource("AnimationLibrary_ttoyh")
 }
+autoplay = "Ireland"
 
 [node name="Map" type="Node3D" parent="."]
 

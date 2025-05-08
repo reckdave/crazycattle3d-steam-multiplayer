@@ -11,10 +11,12 @@ script = ExtResource("1_5v3s6")
 
 [node name="Local" type="AudioStreamPlayer3D" parent="."]
 stream = SubResource("AudioStreamGenerator_5v3s6")
+pitch_scale = 0.5
 autoplay = true
 attenuation_filter_db = 0.0
 
 [node name="Network" type="AudioStreamPlayer3D" parent="."]
 stream = SubResource("AudioStreamGenerator_pme7d")
+pitch_scale = 0.5
 autoplay = true
 attenuation_filter_db = 0.0
