@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dwc78xa4qeori"]
+
+[ext_resource type="Script" uid="uid://bpck055d6lcik" path="res://assets/scripts/voicechat_handler.gd" id="1"]
+
+[node name="VoicechatHandler" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Voice" type="AudioStreamPlayer3D" parent="."]
+bus = &"VoiceChat"

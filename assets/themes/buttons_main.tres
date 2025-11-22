@@ -1,0 +1,11 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://carsydbdoxb7m"]
+
+[ext_resource type="FontFile" uid="uid://c1jgaglfo16gl" path="res://assets/fonts/Ldfcomicsansbold-zgma.ttf" id="1"]
+
+[resource]
+default_font = ExtResource("1")
+Button/colors/font_color = Color(1, 1, 1, 1)
+Button/colors/font_outline_color = Color(0, 0, 0, 1)
+Button/constants/outline_size = 10
+Button/font_sizes/font_size = 28
+Button/fonts/font = ExtResource("1")

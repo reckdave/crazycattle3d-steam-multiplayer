@@ -1,174 +1,101 @@
 extends Node3D
 class_name Player
 
-@export var sheep_speed : float = 100.0
-var tick_rate : int = 0
+@onready var controller: VehicleBody3D = $Controller
 
-#region playerdata
-var dead : bool = false:
-	set(val):
-		
-		$Controller.freeze = val
-		$Controller/Collision.disabled = val
-		$Controller/sheepmodel.visible = !val
-		
-		
-		$Controller.engine_force = 0.0
-		$Controller.steering = 0.0
-		
-		dead = val
+var username: String = "steamuser99"
+var pid: int = 1
+var steamID: int = 0
+var cosmetics: Array = []
 
-var infreecam : bool = false:
-	set(val):
-		if (is_multiplayer_authority()):
-			$Controller/Camera.current = !val
-			$FreeCam.current = val
-		if val:
-			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-			%FreeCam.global_position = $Controller.global_position + Vector3(0,5,0)
-			%player_display.reparent(%FreeCam,false)
-		else:
-			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-			%player_display.reparent($Controller,false)
-		infreecam = val
-var username : String = "steamuser99":
-	set(val):
-		%player_display.text = val
-		username = val
-#endregion
+var sheep_force: float = 100.0
 
-func _enter_tree() -> void:
-	set_multiplayer_authority(int(str(name)))
+var dead: bool = false
+var state: Enums.player_states = Enums.player_states.normal
 
-func _ready() -> void:
-	%player_display.text = MultiplayerHandler.players[int(name)]["username"]
-	multiplayer.peer_disconnected.connect(_on_player_leave)
-	
-	if !(is_multiplayer_authority()):$UI.hide(); $SettingsMenu.hide(); return
-	$Controller/Camera.current = true
-	%player_display.hide()
-	global_position = Vector3(randi_range(-80,80),1,randi_range(-80,80))
+func _enter_tree() -> void :
+	set_multiplayer_authority(pid)
 
-func _unhandled_input(event: InputEvent) -> void:
-	if !(is_multiplayer_authority()): return
-	if (infreecam) and event is InputEventMouseMotion:
+func setup_cosmetics():
+	for cosmetic in cosmetics:
+		var model = get_node_or_null("%Cosmetics/" + cosmetic)
+		if model:
+			model.show()
+
+func _ready() -> void :
+	Util.set_processes(self, false)
+
+	name = str(pid)
+	controller.get_node("usernameLabel").text = username
+	setup_cosmetics()
+	if not is_multiplayer_authority(): return
+
+	Global.player = self
+	controller.get_node("usernameLabel").hide()
+	controller.get_node("Camera").current = true
+	controller.global_position = Vector3(randf_range(-40, 40), 5, randf_range(-40, 40))
+	Util.set_processes(self, true)
+
+func _unhandled_input(event: InputEvent) -> void :
+	if event is InputEventMouseMotion and state == Enums.player_states.spectating:
 		var look_dir = event.relative * 0.01
-		%FreeCam.rotation.y -= look_dir.x * 1.0 * 1.0
-		%FreeCam.rotation.x = clamp(%FreeCam.rotation.x - look_dir.y * 1.0 * 1.0, -1.5, 1.5)
+		%Freecam.rotation.y -= look_dir.x * 1.0 * 1.0
+		%Freecam.rotation.x = clamp( %Freecam.rotation.x - look_dir.y * 1.0 * 1.0, -1.5, 1.5)
 
-func _physics_process(delta: float) -> void:
-	if not (is_multiplayer_authority()): set_physics_process(false); return
-	if Input.is_action_just_pressed("debug_die"): die.rpc()
-	if !(dead):
-		$Controller.steering = lerp($Controller.steering, Input.get_axis("left", "right") * 0.4, 5 * delta)
-		$Controller.engine_force = Input.get_axis("back", "forward") * sheep_speed
-		
-		setcarforce.rpc($Controller.engine_force,$Controller.steering)
-		tick_rate += 1
-		
-		if tick_rate >= 8 :
-			setcardata.rpc($Controller.global_position,$Controller.global_rotation)
-		
-		if Input.is_action_just_pressed("space"):
-			baa_sound.rpc()
-	elif (infreecam) and (dead):
-		var input_dir = Input.get_vector("left","right","forward","back")
-		var forward_dir = %FreeCam.global_transform.basis * Vector3(input_dir.x,0,input_dir.y).normalized()
-		
-		if (Input.is_action_pressed("space")): %FreeCam.global_position.y += 1.0
-		if (Input.is_action_pressed("control")): %FreeCam.global_position.y -= 1.0
-		
-		%FreeCam.global_position.x += forward_dir.x * 0.6
-		%FreeCam.global_position.z += forward_dir.z * 0.6
-		setfreecamdata.rpc(%FreeCam.global_position)
+func _input(event: InputEvent) -> void :
+	if event.is_action_pressed("mute"):
+		$Controller/VoicechatHandler.speak = not $Controller/VoicechatHandler.speak
+		$UI/Mic.visible = not $Controller/VoicechatHandler.speak
+	if event.is_action_pressed("escape"):
+		%PauseMenu.visible = ! %PauseMenu.visible
 
-var can_try : bool = false
-var try_time : float = 1.0
-var can_impulse : bool = true
+func _physics_process(delta: float) -> void :
+	match (state):
+		Enums.player_states.normal:
+			controller.steering = lerp(controller.steering, Input.get_axis("left", "right") * 0.4, 5 * delta)
+			controller.engine_force = Input.get_axis("backwards", "forward") * sheep_force
 
-func _process(delta: float) -> void:
-	$UI/Control/Remaining.text = "%s left alive." % str(GameHandler.alive_players.size())
-	#if (Input.is_action_just_pressed("ui_down")): GameHandler.world_node.get_node("Map/DeathBarriar").queue_free()
-	if !(multiplayer.is_server()): return
-	else:
-		try_time -= delta
-	if !(can_try): 
-		if (try_time <= 0): can_try = true
-		return
-	
-	var dead_collide = %death_ray.is_colliding()
-	var death_area_collide = $Controller/DeathArea.get_overlapping_bodies().size()
-	var inside_zone = $Controller/ZoneArea.get_overlapping_areas().size()
-	
-	if (%impulse_ray.is_colliding()):
-		if (can_impulse):
-			apply_push.rpc(%impulse_ray.get_collider().get_parent().name,$Controller.linear_velocity)
-			can_impulse = false
-			print("sending")
-	else:
-		can_impulse = true
-	
-	if !(dead):
-		if (dead_collide) or (inside_zone <= 0) or (death_area_collide > 0):
-			die.rpc()
-	
-	
-# multiplayer calls
+			var deathRayColliding: bool = controller.get_node("deathRay").is_colliding()
 
-#@rpc("any_peer","call_local","reliable",0)
-#func push_collide(body):
-	#if (multiplayer.get_remote_sender_id() != 1): return
-	#body.apply_impulse($Controller.linear_velocity)
+			if deathRayColliding:
+				local_death()
 
-@rpc("any_peer","call_local","reliable")
-func apply_push(pid,force):
-	if (multiplayer.get_remote_sender_id() != 1): return
-	var plr = GameHandler.get_player(pid)
-	plr.get_node("Controller").apply_impulse(force * 1.1)
+			if Input.is_action_just_pressed("space"):
+				%RPCS.bahh.rpc()
+		Enums.player_states.spectating:
+			%Freecam.current = true
+			var input_dir: Vector2 = Input.get_vector("left", "right", "forward", "backwards")
+			var move_dir: Vector3 = ( %Freecam.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 
-@rpc("authority","call_remote","unreliable",0)
-func setcardata(newpos,newrot):
-	if !(has_node("Controller")): return
-	$Controller.global_position = lerp($Controller.global_position,newpos,0.4)
-	$Controller.global_rotation = newrot
+			%Freecam.global_position.x += move_dir.x * 0.6
+			%Freecam.global_position.z += move_dir.z * 0.6
 
-@rpc("authority","call_remote","unreliable",0)
-func setcarforce(newforce,newsteer):
-	if !(has_node("Controller")): return
-	$Controller.engine_force = newforce
-	$Controller.steering = newsteer
+func _on_death_area_body_entered(body: Node3D) -> void :
+	if not is_multiplayer_authority(): return
+	Data.give_achievement("Noob.")
+	local_death()
 
-@rpc("authority","call_remote","unreliable",0)
-func setfreecamdata(newpos):
-	%FreeCam.global_position = newpos
-@rpc("authority","call_local","unreliable",0)
-func baa_sound():
-	if !(has_node("Controller")): return
-	$Controller/SFX/Baa.play()
+func local_death() -> void :
+	if dead: return
+	state = Enums.player_states.spectating
+	%RPCS.die.rpc()
 
-@rpc("any_peer","call_local","reliable",0)
-func die():
-	if (multiplayer.get_remote_sender_id() != 1): return
-	if !(has_node("Controller")): return
-	
-	if !(dead):
-		print("%s HAS DIED" % username)
-		
-		$Controller/VFX/Explosion.play("Explode")
-		$Controller/SFX/Explode.play()
-		$Controller/SFX/Death1.play()
-		
-		sheep_speed = 0.0
-		
-		infreecam = true
-		dead = true
-		GameHandler.alive_players.erase(int(name))
-		GameHandler.player_removed.emit(int(name))
+func local_death_set() -> void :
+	if dead: return
+	dead = true
+	controller.freeze = true
+	controller.get_node("CollisionShape3D").call_deferred("queue_free")
+	controller.get_node("usernameLabel").reparent( %Freecam, false)
+	SignalBus.player_died.emit(pid)
 
-# multiplayer connects
-func _on_player_leave(pid):
-	if pid == int(name):
-		if GameHandler.alive_players.has(pid): GameHandler.alive_players.erase(pid); GameHandler.player_removed.emit(int(name))
-		queue_free()
+	%Freecam.global_position = controller.global_position + Vector3(0, 5, 0)
 
-# MISC
+	%sheepmodel.hide()
+	%Cosmetics.hide()
+	%VFX.get_node("Explosion").play("Explosion")
+	%SFX.get_node("explode").play()
+
+@rpc("any_peer", "call_local", "reliable")
+func force_kill():
+	if multiplayer.get_remote_sender_id() != 1: return
+	local_death_set()

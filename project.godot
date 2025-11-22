@@ -10,24 +10,29 @@ config_version=5
 
 [application]
 
-config/name="CrazyCattle3D Steam Multiplayer"
-run/main_scene="uid://dufyaukxq2pv8"
-config/features=PackedStringArray("4.4", "Forward Plus")
-config/icon="uid://b2kc0sncv6x3y"
-config/windows_native_icon="res://crazyicon.ico"
+config/name="cc3d-steam-multiplayer-rewrite"
+config/tags=PackedStringArray("game")
+run/main_scene="uid://n7uagpgfwrrb"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="reckdave-cc3d"
+config/features=PackedStringArray("4.5", "Forward Plus")
+config/icon="uid://djan0j7blyrwx"
+
+[audio]
+
+buses/default_bus_layout="uid://d4dy1wig4o451"
 
 [autoload]
 
-Global="*res://assets/scripts/Global.gd"
-Settings="*res://assets/scripts/Settings.gd"
-SteamHandler="*res://assets/scripts/SteamHandler.gd"
-MultiplayerHandler="*res://assets/scripts/MultiplayerHandler.gd"
-GameHandler="*res://assets/scripts/GameHandler.gd"
+Global="*res://assets/scripts/autoload/Global.gd"
+Data="*res://assets/scripts/autoload/Data.gd"
+Util="*res://assets/scripts/autoload/Util.gd"
+Enums="*res://assets/scripts/autoload/Enums.gd"
+SignalBus="*res://assets/scripts/autoload/SignalBus.gd"
+GameHandler="*res://assets/scripts/autoload/GameHandler.gd"
+MultiplayerHandler="*res://assets/scripts/autoload/MultiplayerHandler.gd"
 DiscordRPCLoader="*res://addons/discord-rpc-gd/nodes/discord_autoload.gd"
-
-[debug]
-
-file_logging/enable_file_logging=true
+Notif="*res://assets/scripts/autoload/Notif.tscn"
 
 [display]
 
@@ -35,52 +40,39 @@ window/size/viewport_width=640
 window/size/viewport_height=480
 window/stretch/mode="viewport"
 window/stretch/aspect="ignore"
-mouse_cursor/custom_image="uid://dde5f537aerd"
+
+[editor_overrides]
+
+text_editor/behavior/indent/type=0
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/discord-rpc-gd/plugin.cfg")
-
-[file_customization]
-
-folder_colors={
-"res://addons/": "gray",
-"res://assets/": "gray",
-"res://assets/audio/": "red",
-"res://assets/models/": "orange",
-"res://assets/objects/": "yellow",
-"res://assets/scenes/": "green",
-"res://assets/scripts/": "blue",
-"res://assets/textures/": "purple",
-"res://assets/textures/egypt/": "orange",
-"res://assets/textures/ireland/": "green"
-}
 
 [input]
 
 left={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":65,"key_label":0,"unicode":97,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194319,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 right={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":68,"key_label":0,"unicode":100,"location":0,"echo":false,"script":null)
-]
-}
-back={
-"deadzone": 0.2,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":83,"key_label":0,"unicode":115,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194321,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 forward={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":87,"key_label":0,"unicode":119,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194320,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
-debug_die={
+backwards={
 "deadzone": 0.2,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":80,"key_label":0,"unicode":112,"location":0,"echo":false,"script":null)
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":83,"key_label":0,"unicode":115,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194322,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 space={
@@ -88,25 +80,26 @@ space={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":32,"key_label":0,"unicode":32,"location":0,"echo":false,"script":null)
 ]
 }
-control={
-"deadzone": 0.2,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194326,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
-]
-}
-esc={
+escape={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194305,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
-debug_respawn={
+mute={
 "deadzone": 0.2,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":79,"key_label":0,"unicode":111,"location":0,"echo":false,"script":null)
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":86,"key_label":0,"unicode":118,"location":0,"echo":false,"script":null)
 ]
 }
 
 [layer_names]
 
-3d_physics/layer_10="PLAYER"
+3d_physics/layer_1="world"
+3d_physics/layer_2="player"
+3d_physics/layer_3="death"
+
+[physics]
+
+common/physics_interpolation=true
 
 [steam]
 

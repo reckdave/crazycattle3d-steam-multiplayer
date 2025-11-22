@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://o2jtqmhcwrs4"]
+
+[ext_resource type="Theme" uid="uid://carsydbdoxb7m" path="res://assets/themes/buttons_main.tres" id="1"]
+
+[sub_resource type="GDScript" id="GDScript_uroli"]
+script/source = "extends Control
+
+@onready var button : CheckBox = $Enable
+@export var cosmeticName : String = \"NONE\"
+
+func _ready() -> void:
+	button.text = cosmeticName
+	if Data.data.game.cosmetics.has(cosmeticName):
+		button.button_pressed = true
+
+func _on_enable_pressed() -> void:
+	if button.button_pressed:
+		Data.data.game.cosmetics.append(cosmeticName)
+		#Global.pdata.cosmetics.append(cosmeticName)
+		Data.save()
+	else:
+		Data.data.game.cosmetics.erase(cosmeticName)
+		#Global.pdata.cosmetics.erase(cosmeticName)
+		Data.save()
+"
+
+[node name="CosmeticUI" type="Control"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 42.0
+grow_horizontal = 2
+script = SubResource("GDScript_uroli")
+cosmeticName = "PLACEHOLDER"
+
+[node name="Enable" type="CheckBox" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 43.0
+grow_horizontal = 2
+theme = ExtResource("1")
+text = "NONE"
+
+[connection signal="pressed" from="Enable" to="." method="_on_enable_pressed"]

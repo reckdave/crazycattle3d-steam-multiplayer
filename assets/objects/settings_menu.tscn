@@ -1,0 +1,318 @@
+[gd_scene load_steps=7 format=3 uid="uid://bbl1rx3pdkgnj"]
+
+[ext_resource type="Script" uid="uid://bp66mcgclv4sd" path="res://assets/scripts/menu/settings_menu.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://bmv36t4jrlgaq" path="res://assets/textures/bubble.png" id="2"]
+[ext_resource type="Theme" uid="uid://carsydbdoxb7m" path="res://assets/themes/buttons_main.tres" id="3"]
+[ext_resource type="Script" uid="uid://b4w752onbllrq" path="res://assets/scripts/settings/gamesettings.gd" id="4"]
+[ext_resource type="Texture2D" uid="uid://cgvdnox0i3qmx" path="res://addons/famfamfam-silk/cross.png" id="5_cagho"]
+
+[sub_resource type="GDScript" id="GDScript_cagho"]
+script/source = "extends Control
+
+var master_bus_index = AudioServer.get_bus_index(\"Master\")
+var music_bus_index = AudioServer.get_bus_index(\"Music\")
+var sfx_bus_index = AudioServer.get_bus_index(\"SFX\")
+var vc_bus_index = AudioServer.get_bus_index(\"VoiceChat\")
+
+func _ready() -> void:
+	AudioServer.set_bus_volume_db(music_bus_index,linear_to_db(Data.data.settings.music_vol))
+	AudioServer.set_bus_volume_db(master_bus_index,linear_to_db(Data.data.settings.master_vol))
+	AudioServer.set_bus_volume_db(sfx_bus_index,linear_to_db(Data.data.settings.sfx_vol))
+	AudioServer.set_bus_volume_db(vc_bus_index,linear_to_db(Data.data.settings.vc_vol))
+	$MasterSlider.value = Data.data.settings.master_vol
+	$SFXSlider.value = Data.data.settings.sfx_vol
+	$MusicSlider.value = Data.data.settings.music_vol
+	$VCSlider.value = Data.data.settings.vc_vol
+
+func _on_music_slider_value_changed(value: float) -> void:
+	AudioServer.set_bus_volume_db(music_bus_index,linear_to_db(value))
+	Data.data.settings.music_vol = value
+	Data.save()
+
+func _on_master_slider_value_changed(value: float) -> void:
+	AudioServer.set_bus_volume_db(master_bus_index,linear_to_db(value))
+	Data.data.settings.master_vol = value
+	Data.save()
+
+func _on_sfx_slider_value_changed(value: float) -> void:
+	AudioServer.set_bus_volume_db(sfx_bus_index,linear_to_db(value))
+	Data.data.settings.sfx_vol = value
+	Data.save()
+
+func _on_vc_slider_value_changed(value: float) -> void:
+	AudioServer.set_bus_volume_db(vc_bus_index,linear_to_db(value))
+	Data.data.settings.vc_vol = value
+	Data.save()
+"
+
+[node name="SettingsMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="BG" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.555)
+
+[node name="Clouds" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -364.0
+offset_top = -339.0
+offset_right = 276.0
+offset_bottom = 141.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.2, 1.2)
+texture = ExtResource("2")
+stretch_mode = 5
+
+[node name="Title" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -139.0
+offset_top = 12.0
+offset_right = 138.0
+offset_bottom = 98.0
+grow_horizontal = 2
+theme = ExtResource("3")
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/normal_font_size = 35
+bbcode_enabled = true
+text = "[wave]SETTINGS"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Game" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4")
+
+[node name="USER" type="LineEdit" parent="Game"]
+layout_mode = 0
+offset_left = 110.0
+offset_top = 212.0
+offset_right = 401.0
+offset_bottom = 243.0
+theme = ExtResource("3")
+theme_override_constants/outline_size = 5
+placeholder_text = "USERNAME HERE"
+max_length = 25
+flat = true
+
+[node name="RESETDATA" type="Button" parent="Game"]
+layout_mode = 0
+offset_left = 441.0
+offset_top = 339.0
+offset_right = 562.0
+offset_bottom = 383.0
+theme = ExtResource("3")
+theme_override_colors/font_color = Color(0.933302, 0, 0.214654, 1)
+theme_override_colors/font_outline_color = Color(0.548363, 0, 0.114036, 1)
+theme_override_font_sizes/font_size = 16
+text = "RESET DATA"
+flat = true
+
+[node name="Audio" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = SubResource("GDScript_cagho")
+
+[node name="MasterSlider" type="HSlider" parent="Audio"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 268.0
+offset_top = 192.0
+offset_right = 518.0
+offset_bottom = 208.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="Text" type="RichTextLabel" parent="Audio/MasterSlider"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -115.0
+offset_top = -20.0
+offset_right = 9.0
+offset_bottom = 20.0
+grow_vertical = 2
+theme = ExtResource("3")
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/normal_font_size = 30
+text = "Master"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SFXSlider" type="HSlider" parent="Audio"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 268.0
+offset_top = 223.0
+offset_right = 518.0
+offset_bottom = 239.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="Text" type="RichTextLabel" parent="Audio/SFXSlider"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -115.0
+offset_top = -20.0
+offset_right = 9.0
+offset_bottom = 20.0
+grow_vertical = 2
+theme = ExtResource("3")
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/normal_font_size = 30
+text = "SFX"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MusicSlider" type="HSlider" parent="Audio"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 268.0
+offset_top = 251.0
+offset_right = 518.0
+offset_bottom = 267.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="Text" type="RichTextLabel" parent="Audio/MusicSlider"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -115.0
+offset_top = -20.0
+offset_right = 9.0
+offset_bottom = 20.0
+grow_vertical = 2
+theme = ExtResource("3")
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/normal_font_size = 30
+text = "Music"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VCSlider" type="HSlider" parent="Audio"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 268.0
+offset_top = 308.0
+offset_right = 518.0
+offset_bottom = 324.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="Text" type="RichTextLabel" parent="Audio/VCSlider"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -115.0
+offset_top = -20.0
+offset_right = 9.0
+offset_bottom = 20.0
+grow_vertical = 2
+theme = ExtResource("3")
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/normal_font_size = 30
+text = "Voice Chat"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EXIT" type="Button" parent="."]
+layout_mode = 0
+offset_right = 102.0
+offset_bottom = 43.0
+theme = ExtResource("3")
+text = "BACK"
+icon = ExtResource("5_cagho")
+flat = true
+
+[node name="Category" type="OptionButton" parent="."]
+clip_contents = true
+layout_mode = 0
+offset_left = 164.0
+offset_top = 137.0
+offset_right = 288.0
+offset_bottom = 177.0
+focus_mode = 3
+theme = ExtResource("3")
+theme_override_constants/outline_size = 10
+autowrap_mode = 3
+autowrap_trim_flags = 192
+selected = 1
+item_count = 2
+popup/item_0/text = "Game"
+popup/item_0/id = 0
+popup/item_1/text = "Audio"
+popup/item_1/id = 1
+
+[connection signal="text_submitted" from="Game/USER" to="Game" method="_on_user_text_submitted"]
+[connection signal="pressed" from="Game/RESETDATA" to="Game" method="_on_resetdata_pressed"]
+[connection signal="value_changed" from="Audio/MasterSlider" to="Audio" method="_on_master_slider_value_changed"]
+[connection signal="value_changed" from="Audio/SFXSlider" to="Audio" method="_on_sfx_slider_value_changed"]
+[connection signal="value_changed" from="Audio/MusicSlider" to="Audio" method="_on_music_slider_value_changed"]
+[connection signal="value_changed" from="Audio/VCSlider" to="Audio" method="_on_vc_slider_value_changed"]
+[connection signal="pressed" from="EXIT" to="." method="_on_exit_pressed"]
+[connection signal="item_selected" from="Category" to="." method="_on_category_item_selected"]

@@ -1,13 +1,26 @@
-## This is a GDscript Node wich gets automatically added as Autoload while installing the addon.
-## 
-## It can run in the background to comunicate with Discord.
-## You don't need to use it. If you remove it make sure to run [code]DiscordRPC.run_callbacks()[/code] in a [code]_process[/code] function.
-##
-## @tutorial: https://github.com/vaporvee/discord-rpc-godot/wiki
+
+
+
+
+
+
 extends Node
 
-func _ready() -> void:
-	pass
+func setup_discord():
+    DiscordRPC.app_id = 1365025198646235268
+    DiscordRPC.state = "Playing";
+    DiscordRPC.details = "Knocking over sheep.";
 
-func  _process(_delta) -> void:
-	DiscordRPC.run_callbacks()
+
+    DiscordRPC.large_image = "crazy_icon";
+    DiscordRPC.large_image_text = "Cattle";
+    DiscordRPC.small_image = "icon_svg";
+    DiscordRPC.small_image_text = "Made in Godot";
+    DiscordRPC.refresh()
+    print("updated")
+
+func _ready() -> void :
+    setup_discord()
+
+func _process(_delta) -> void :
+    DiscordRPC.run_callbacks()

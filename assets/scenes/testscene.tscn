@@ -1,0 +1,77 @@
+[gd_scene load_steps=11 format=3 uid="uid://6hfj2at7vm01"]
+
+[ext_resource type="Texture2D" uid="uid://di21hsxbrc6wb" path="res://assets/textures/ireland/rollinghills.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://g8gws3kl1rer" path="res://assets/textures/ireland/grass.png" id="2"]
+[ext_resource type="PackedScene" uid="uid://ckwmgrn1rjmh8" path="res://assets/models/fence.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://byg2ehxtrpwd6" path="res://assets/models/stonehouse.glb" id="4"]
+[ext_resource type="AudioStream" uid="uid://dhwdk5cbuofd3" path="res://assets/audio/world1.wav" id="5"]
+[ext_resource type="Texture2D" uid="uid://cdovwkedvp0um" path="res://assets/textures/thegouls.jpg" id="6_r2dgh"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_au2ax"]
+panorama = ExtResource("1")
+
+[sub_resource type="Sky" id="Sky_gfc6q"]
+sky_material = SubResource("PanoramaSkyMaterial_au2ax")
+
+[sub_resource type="Environment" id="Environment_gi540"]
+background_mode = 2
+background_energy_multiplier = 0.65
+sky = SubResource("Sky_gfc6q")
+sky_custom_fov = 76.0
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 4.0
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gi540"]
+albedo_texture = ExtResource("2")
+uv1_scale = Vector3(0.05, 0.05, 0.05)
+uv1_triplanar = true
+
+[node name="Ireland" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_gi540")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+
+[node name="Floor" type="CSGBox3D" parent="."]
+use_collision = true
+size = Vector3(400, 1, 400)
+material = SubResource("StandardMaterial3D_gi540")
+
+[node name="Floor2" type="CSGBox3D" parent="."]
+transform = Transform3D(0.984799, -0.1737, 0, 0.1737, 0.984799, 0, 0, 0, 1, -42.989, -1.38711, 15.5)
+use_collision = true
+size = Vector3(12.8594, 6, 15)
+material = SubResource("StandardMaterial3D_gi540")
+
+[node name="Floor3" type="CSGBox3D" parent="."]
+transform = Transform3D(-0.25, 0.0669873, 0.965926, 0.0800286, 0.99562, -0.0483336, -0.964933, 0.0652183, -0.254266, 25.0263, -1.78168, 15.5461)
+use_collision = true
+size = Vector3(12.8594, 6, 15)
+material = SubResource("StandardMaterial3D_gi540")
+
+[node name="Floor4" type="CSGBox3D" parent="."]
+transform = Transform3D(0.482963, -0.12941, -0.866026, 0.168792, 0.984229, -0.0529411, 0.859218, -0.120609, 0.497189, -11.5427, -1.96293, -39.788)
+use_collision = true
+size = Vector3(12.8594, 6, 15)
+material = SubResource("StandardMaterial3D_gi540")
+
+[node name="Fence" parent="." instance=ExtResource("3")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 2.51194, 0)
+
+[node name="stonehouse" parent="." instance=ExtResource("4")]
+transform = Transform3D(-7.07107, 0, -7.07107, 0, 10, 0, 7.07107, 0, -7.07107, -86, 11, -72)
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5")
+autoplay = true
+bus = &"Music"
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -91, 9, -66)
+pixel_size = 0.03
+billboard = 1
+texture = ExtResource("6_r2dgh")

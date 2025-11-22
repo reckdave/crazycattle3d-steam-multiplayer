@@ -2,7 +2,7 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://jccsstg3m8ue"
+uid="uid://djpxb4dsooc7c"
 path="res://.godot/imported/explode.wav-cfae5cfb6a02bfb408c9d57edb8ba93d.sample"
 
 [deps]
@@ -20,5 +20,5 @@ edit/trim=false
 edit/normalize=false
 edit/loop_mode=0
 edit/loop_begin=0
-edit/loop_end=-1
-compress/mode=2
+edit/loop_end=0
+compress/mode=0
